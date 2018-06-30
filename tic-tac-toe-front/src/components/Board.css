@@ -1,0 +1,35 @@
+.board {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 600px;
+    table-layout: fixed;
+}
+
+.board,
+.board th,
+.board td {
+    border: 2px solid lightgrey;
+}
+
+.board tr {
+}
+
+.board td {
+    position: relative;
+}
+
+.board td:after {
+    content: ' ';
+    display: block;
+    width: 100%;
+    padding-top: 100%;
+}
+
+/* TODO: to icon */
+.board-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6.5vw;
+}
