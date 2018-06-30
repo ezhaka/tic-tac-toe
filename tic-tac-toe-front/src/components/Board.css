@@ -5,13 +5,12 @@
     table-layout: fixed;
 }
 
-.board,
-.board th,
 .board td {
     border: 2px solid lightgrey;
 }
 
-.board tr {
+.board {
+    border-style: hidden;
 }
 
 .board td {
@@ -32,4 +31,10 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 6.5vw;
+}
+
+@media (min-width: 600px) {
+    .board-icon {
+        font-size: 50px;
+    }
 }

@@ -5,12 +5,13 @@ import './Board.css'
 import {get, find} from 'lodash'
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {joinBoard, makeMove} from "../store/boards/actions";
+import {joinBoard, loadBoard, makeMove} from "../store/boards/actions";
 import selectors from "../store/boards/selectors";
 
 class Board extends Component {
   componentDidMount() {
-    this.props.joinBoard(this.props.boardId)
+    const { boardId, loadBoard, joinBoard } = this.props;
+    loadBoard(boardId)
   }
 
   handleCellClick = (coordinates) => {
@@ -19,6 +20,11 @@ class Board extends Component {
 
   render() {
     const {occupiedCells} = this.props;
+
+    // TODO: убрать
+    if (!occupiedCells) {
+      return <span>Загрузочка...</span>
+    }
 
     return <table className="board">
       <tbody>
@@ -38,6 +44,12 @@ class Board extends Component {
 
 const mapStateToProps = (state, {boardId}) => {
   const board = selectors.getBoardById(state, boardId);
+
+  // TODO: убрать
+  if (!board) {
+    return {}
+  }
+
   const occupiedCells = {}
 
   for (let move of board.moves) {
@@ -56,7 +68,7 @@ const mapStateToProps = (state, {boardId}) => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({makeMove, joinBoard}, dispatch)
+  ...bindActionCreators({makeMove, joinBoard, loadBoard}, dispatch)
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board)

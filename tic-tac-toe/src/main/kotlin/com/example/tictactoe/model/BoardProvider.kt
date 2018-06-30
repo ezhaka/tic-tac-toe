@@ -18,10 +18,20 @@ class BoardProvider {
     }
 
     fun getByIdOrDefault(boardId: String): Mono<Board> {
-        return getById(boardId).defaultIfEmpty(Board(boardId, Instant.now(), emptyList(), emptySet()))
+        return getById(boardId).defaultIfEmpty(Board(boardId, emptyList(), emptySet()))
     }
 
-    fun save(board: Board): Mono<Void> {
+    fun update(board: Board): Mono<Void> {
+        // TODO: проверить, что такая борда уже есть
+        map[board.id] = board
+        return Mono.empty()
+    }
+
+    fun create(board: Board): Mono<Void> {
+        if (map.containsKey(board.id)) {
+            return Mono.error(BoardAlreadyExistsException(board.id))
+        }
+
         map[board.id] = board
         return Mono.empty()
     }

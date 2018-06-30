@@ -1,6 +1,7 @@
 package com.example.tictactoe.model
 
 import java.time.Instant
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -8,14 +9,14 @@ import java.time.Instant
  */
 data class Board(
     val id: String,
-    val createdDate: Instant,
     val moves: List<Move>,
-    val players: Set<Player>
+    val players: Set<Player>,
+    val createdDate: Instant = Instant.now()
 ) {
     val isFinished: Boolean = checkIsFinished()
 
     fun makeMove(move: Move): Board {
-        val canMakeMove = moves.isEmpty() || moves.last().userId == move.userId
+        val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
 
         if (!canMakeMove) {
             throw RuntimeException("tried to make move out of order") // TODO: message

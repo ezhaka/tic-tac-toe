@@ -1,16 +1,10 @@
-import {MOVE_MADE, PLAYER_JOINED} from "./actions";
+import {BOARD_LOADED, MOVE_MADE, PLAYER_JOINED} from "./actions";
 
-const defaultBoard = {
-  id: '@DEFAULT',
-  moves: [],
-  players: []
-};
-
-const initialState = { entities: { [defaultBoard.id]: defaultBoard } };
+const initialState = { entities: {} };
 
 export default function(state = initialState, action) {
   const updateBoard = (boardId, mapper) => {
-    const board = state.entities[action.payload.boardId];
+    const board = state.entities[boardId];
     return { entities: { ...state.entities, [boardId]: mapper(board) } }
   }
 
@@ -24,6 +18,9 @@ export default function(state = initialState, action) {
       const {boardId, move} = action.payload
       return updateBoard(boardId, board => ({...board, moves: [...board.moves, move]}))
     }
+
+    case BOARD_LOADED:
+      return updateBoard(action.board.id, () => action.board)
 
     default:
       return state

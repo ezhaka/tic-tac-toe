@@ -1,6 +1,5 @@
 package com.example.tictactoe.websockets
 
-import com.example.tictactoe.model.Board
 import com.example.tictactoe.model.BoardProvider
 import com.example.tictactoe.model.Move
 import org.springframework.web.reactive.socket.WebSocketHandler
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.ConnectableFlux
 import reactor.core.publisher.TopicProcessor
-import java.time.Instant
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -108,7 +106,7 @@ class GameWebSocketHandler(
                 val move = Move(message.userId!!, message.coordinates)
 
                 boardProvider.getByIdOrDefault(message.boardId)
-                    .flatMap { boardProvider.save(it.makeMove(move)) }
+                    .flatMap { boardProvider.update(it.makeMove(move)) }
                     .thenReturn(MoveMadeMessage(message.userId, message.boardId, move))
             }
 
@@ -116,7 +114,7 @@ class GameWebSocketHandler(
                 .map { it.addPlayer(message.userId!!) }
                 .flatMap { board ->
                     boardProvider
-                        .save(board)
+                        .update(board)
                         .thenReturn(board.getPlayer(message.userId!!))
                 }
                 .map { PlayerJoinedMessage(message.userId!!, message.boardId, it) }

@@ -4,6 +4,8 @@ function Icon({type}) {
   switch (type) {
     case 'UNICORN':
       return <span className="board-icon" role="img" aria-label="Unicorn">🦄</span>
+    case 'HEDGEHOG':
+      return <span className="board-icon" role="img" aria-label="Unicorn">🦔</span>
     default:
       throw new Error(`Unkonwn icon type ${type}`)
   }
