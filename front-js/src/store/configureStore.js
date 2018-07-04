@@ -4,8 +4,9 @@ import webSocketMiddleware from "./webSockets/middleware";
 import boardsReducer from './boards/reducer'
 import webSocketsReducer from './webSockets/reducer'
 import boardsEpic from './boards/epics'
+import { connectRouter, routerMiddleware } from 'connected-react-router'
 
-export default function configureStore(initialState = {}) {
+export default function configureStore(history) {
   const rootReducer = combineReducers({
     boards: boardsReducer,
     webSockets: webSocketsReducer
@@ -20,9 +21,9 @@ export default function configureStore(initialState = {}) {
   const epicMiddleware = createEpicMiddleware();
 
   const store = createStore(
-    rootReducer,
-    initialState,
-    composeEnhancers(applyMiddleware(epicMiddleware, webSocketMiddleware))
+    connectRouter(history)(rootReducer),
+    {},
+    composeEnhancers(applyMiddleware(epicMiddleware, webSocketMiddleware, routerMiddleware(history)))
   );
 
   epicMiddleware.run(rootEpic)

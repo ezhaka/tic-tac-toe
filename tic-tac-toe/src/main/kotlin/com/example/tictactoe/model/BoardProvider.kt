@@ -1,6 +1,7 @@
 package com.example.tictactoe.model
 
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -27,12 +28,18 @@ class BoardProvider {
         return Mono.empty()
     }
 
-    fun create(board: Board): Mono<Void> {
+    fun create(board: Board): Mono<Board> {
         if (map.containsKey(board.id)) {
             return Mono.error(BoardAlreadyExistsException(board.id))
         }
 
         map[board.id] = board
-        return Mono.empty()
+        return Mono.just(board)
     }
+
+    fun getActive() = Flux.fromStream(
+        map.values.stream()
+            .filter { !it.isFinished }
+            .sorted(Comparator.comparing<Board, Instant> { it.createdDate }.reversed())
+    )
 }

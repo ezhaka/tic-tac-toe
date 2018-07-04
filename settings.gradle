@@ -10,3 +10,4 @@
 rootProject.name = 'tic-tac-toe'
 
 include 'tic-tac-toe'
+include 'front-kt'

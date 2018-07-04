@@ -2,6 +2,7 @@ package com.example.tictactoe.model
 
 import java.time.Instant
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.util.*
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -14,6 +15,8 @@ data class Board(
     val createdDate: Instant = Instant.now()
 ) {
     val isFinished: Boolean = checkIsFinished()
+
+    private constructor(builder: Builder) : this(builder.id, builder.moves, builder.players, builder.createdDate)
 
     fun makeMove(move: Move): Board {
         val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
@@ -63,5 +66,14 @@ data class Board(
 
     fun removePlayer(userId: String): Board {
         return copy(players = players.filter { it.userId != userId }.toHashSet())
+    }
+
+    class Builder {
+        var id: String = UUID.randomUUID().toString()
+        var moves: List<Move> = ArrayList()
+        var players: Set<Player> = HashSet()
+        var createdDate: Instant = Instant.now()
+
+        fun build() = Board(this)
     }
 }

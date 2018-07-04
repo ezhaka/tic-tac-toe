@@ -153,6 +153,19 @@ module.exports = {
               compact: true,
             },
           },
+          {
+            test: /\.scss$/,
+            use: [
+              require.resolve('style-loader'),
+              require.resolve('css-loader'),
+              {
+                loader: require.resolve('sass-loader'),
+                options: {
+                  includePaths: ['./node_modules', './node_modules/grommet/node_modules']
+                }
+              }
+            ]
+          },
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
