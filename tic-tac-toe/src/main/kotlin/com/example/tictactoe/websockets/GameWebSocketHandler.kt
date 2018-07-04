@@ -1,5 +1,6 @@
 package com.example.tictactoe.websockets
 
+import com.example.tictactoe.auth.GameAuthentication
 import com.example.tictactoe.model.BoardProvider
 import com.example.tictactoe.model.Move
 import org.springframework.web.reactive.socket.WebSocketHandler
@@ -8,8 +9,13 @@ import reactor.core.publisher.Mono
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.socket.WebSocketMessage
 import reactor.core.publisher.ConnectableFlux
+import reactor.core.publisher.Flux
 import reactor.core.publisher.TopicProcessor
+import java.security.Principal
+import java.util.function.BiFunction
+import javax.naming.AuthenticationException
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -41,27 +47,16 @@ class GameWebSocketHandler(
     }
 
     override fun handle(session: WebSocketSession): Mono<Void> {
-//        return session.send(
-//            session.receive()
-//                .map { fromJson(it.payloadAsText).apply { userId = session.id } }
-//                .doOnNext {
-//                    println(it)
-//                    processMessage(it)
-//                }
-//                .filter { it is SwitchRoomMessage }
-//                .cast(SwitchRoomMessage::class.java)
-//                .switchMap { observeRoom(it.room) }
-//                .map { session.textMessage(toJson(it)) }
-//        )
-
-        session.handshakeInfo.principal.subscribe(
-            { log.info("principal ${it}") },
-            { log.info("principal error ${it}") },
-            { log.info("principal completed") }
+        val input = Flux.combineLatest(
+            session.receive(),
+            session.handshakeInfo.principal,
+            BiFunction<WebSocketMessage, Principal, Message> { message, principal ->
+                when (principal) {
+                    is GameAuthentication -> fromJson(message.payloadAsText).apply { userId = principal.user.id }
+                    else -> throw AuthenticationException("Authentication is not found or has invalid type: $principal")
+                }
+            }
         )
-
-        val input = session.receive()
-            .map { fromJson(it.payloadAsText).apply { userId = session.id } }
             .doOnNext {
                 println(it)
                 processIncomingMessage(it)
@@ -86,10 +81,6 @@ class GameWebSocketHandler(
     private fun processIncomingMessage(message: Message) {
         processor.onNext(message)
     }
-
-//    fun observeRoom(room: String): Flux<Message> {
-//        return processor.filter { it.room == room }
-//    }
 
     private fun fromJson(s: String): Message {
         return objectMapper.readValue(s, Message::class.java)

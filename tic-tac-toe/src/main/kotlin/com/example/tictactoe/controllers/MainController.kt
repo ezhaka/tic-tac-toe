@@ -1,6 +1,7 @@
 package com.example.tictactoe.controllers
 
 import com.example.tictactoe.auth.User
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import reactor.core.publisher.Mono
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
+import java.security.Principal
 
 
 /**
@@ -18,9 +20,19 @@ import org.springframework.core.io.Resource
 @Controller
 @RequestMapping("/")
 class MainController {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     @GetMapping("/", produces = ["text/html"])
-    fun main(): ResponseEntity<Resource> {
+    fun main(principal: Mono<Principal>): ResponseEntity<Resource> {
         val resource = ClassPathResource("templates/main.html")
         return ResponseEntity.ok().body(resource);
+    }
+
+    // TODO: remove
+    @GetMapping("/greet")
+    fun greet(principal: Mono<Principal>): Mono<ResponseEntity<String>> {
+        return principal
+            .map { it.name }
+            .map { name -> ResponseEntity.ok("Hello, ${name}") }
     }
 }
