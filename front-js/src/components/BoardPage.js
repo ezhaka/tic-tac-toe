@@ -5,41 +5,44 @@ import {loadBoard} from "../store/boards/actions";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import selectors from "../store/boards/selectors";
+import Label from 'grommet/components/Label'
+import Section from 'grommet/components/Section'
+import Columns from 'grommet/components/Columns'
+import Split from 'grommet/components/Split'
+import Box from 'grommet/components/Box'
 
 class BoardPage extends Component {
-  componentDidMount() {
-    const { boardId, loadBoard } = this.props;
-    loadBoard(boardId)
-  }
-
   render() {
-    const {boardId, isLoading} = this.props;
+    const {boardId, isLoading, isActivePlayer} = this.props;
 
     // TODO: убрать
     if (isLoading) {
       return <span>Загрузочка...</span>
     }
 
-    return <div>
-      <Board boardId={boardId}/>
-      <PlayersList boardId={boardId}/>
-    </div>
+    return <Split showOnResponsive={'both'} flex={'left'} separator={true}>
+      <Box pad={'medium'}>
+        <Board boardId={boardId}/>
+        {isActivePlayer && <Label align="center">Your turn!</Label>}
+      </Box>
+      <Box pad={'medium'}>
+        <PlayersList boardId={boardId}/>
+      </Box>
+    </Split>
   }
 }
 
-
-const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({loadBoard}, dispatch)
-})
-
 const mapStateToProps = (state, {match}) => {
   const boardId = match.params.id
+  
+  console.log(selectors)
   const board = selectors.getBoardById(state, boardId);
 
   return {
     boardId,
-    isLoading: !board
+    isLoading: !board,
+    isActivePlayer: selectors.isActivePlayer(state, boardId)
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BoardPage)
+export default connect(mapStateToProps)(BoardPage)

@@ -3,7 +3,7 @@ import Button from 'grommet/components/Button'
 import List from 'grommet/components/List'
 import ListItem from 'grommet/components/ListItem'
 import Section from 'grommet/components/Section'
-import {createBoard, loadBoardList} from "../store/boards/actions";
+import {createBoard, joinBoard, loadBoardList} from "../store/boards/actions";
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
@@ -34,16 +34,13 @@ class BoardListItem extends Component {
 }
 
 class BoardList extends Component {
-  componentDidMount() {
-    this.props.loadBoardList()
-  }
-
   createBoard = () => {
     this.props.createBoard()
   }
 
   handleBoardClick = (boardId) => {
     this.props.push(`/boards/${boardId}`)
+    this.props.joinBoard(boardId)
   }
 
   render() {
@@ -70,7 +67,7 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({loadBoardList, createBoard, push}, dispatch)
+  ...bindActionCreators({createBoard, push, joinBoard}, dispatch)
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BoardList)

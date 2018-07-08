@@ -64,7 +64,8 @@ class SecurityConfiguration() {
             val response = webFilterExchange.exchange.response
             response.statusCode = HttpStatus.OK
             userDao().add((authentication as GameAuthentication).user) // TODO: некрасивый каст
-            Mono.empty()
+            val exchange = webFilterExchange.exchange
+            webFilterExchange.chain.filter(exchange)
         }
 
         return http

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {range} from 'lodash'
-import BoardIcon from './BoardIcon'
+import BoardCell from './BoardCell'
 import './Board.css'
 import {get, find} from 'lodash'
 import {bindActionCreators} from 'redux';
@@ -20,7 +20,7 @@ class Board extends Component {
       <tbody>
       {range(10).map(row => <tr key={row}>
         {range(10).map(column =>
-          <BoardIcon /* TODO: rename to BoardCell */
+          <BoardCell
             key={column}
             onClick={this.handleCellClick}
             coordinates={{row, column}}

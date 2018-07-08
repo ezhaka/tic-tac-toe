@@ -3,12 +3,14 @@ import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import webSocketMiddleware from "./webSockets/middleware";
 import boardsReducer from './boards/reducer'
 import webSocketsReducer from './webSockets/reducer'
+import authenticationReducer from './authentication/reducer'
 import boardsEpic from './boards/epics'
 import authenticationEpic from './authentication/epics'
 import { connectRouter, routerMiddleware } from 'connected-react-router'
 
 export default function configureStore(history) {
   const rootReducer = combineReducers({
+    authentication: authenticationReducer,
     boards: boardsReducer,
     webSockets: webSocketsReducer
   })

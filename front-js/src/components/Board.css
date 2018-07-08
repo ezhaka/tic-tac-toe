@@ -1,8 +1,9 @@
 .board {
     border-collapse: collapse;
     width: 100%;
-    max-width: 600px;
+    max-width: 500px;
     table-layout: fixed;
+    margin: 0 auto;
 }
 
 .board td {
@@ -33,8 +34,8 @@
     font-size: 6.5vw;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 500px) {
     .board-icon {
-        font-size: 50px;
+        font-size: 40px;
     }
 }

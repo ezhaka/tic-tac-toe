@@ -7,12 +7,6 @@ import { push } from 'connected-react-router'
 
 export default combineEpics(
   (actions, state) => actions.pipe(
-    filter(action => action.type === LOAD_BOARD),
-    flatMap(action => ajax(`/api/boards/${action.boardId}`)),
-    map(r => r.response),
-    flatMap(board => of(boardLoaded(board), joinBoard(board.id)))
-  ),
-  (actions, state) => actions.pipe(
     filter(action => action.type === CREATE_BOARD),
     flatMap(action => ajax.post(`/api/boards`, {}, {'Content-Type': 'application/json'})),
     map(r => r.response),
