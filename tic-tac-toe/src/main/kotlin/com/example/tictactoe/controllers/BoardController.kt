@@ -1,14 +1,19 @@
 package com.example.tictactoe.controllers
 
+import com.example.tictactoe.auth.GameAuthentication
 import com.example.tictactoe.auth.UserDao
 import com.example.tictactoe.model.Board
 import com.example.tictactoe.model.BoardAlreadyExistsException
 import com.example.tictactoe.model.BoardProvider
+import com.example.tictactoe.websockets.MessageBus
+import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity.*
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.security.Principal
+import java.util.*
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -16,7 +21,7 @@ import reactor.core.publisher.Mono
  */
 @RestController
 @RequestMapping("/api/boards")
-class BoardController(val boardProvider: BoardProvider, val userDao: UserDao) {
+class BoardController(val boardProvider: BoardProvider, val userDao: UserDao, val messageBus: MessageBus) {
     @GetMapping
     fun get(): Flux<BoardDto> {
         return boardProvider.getActive()
@@ -24,12 +29,18 @@ class BoardController(val boardProvider: BoardProvider, val userDao: UserDao) {
     }
 
     @PostMapping
-    fun post(@RequestBody builder: Board.Builder) = boardProvider.create(builder.build())
+    fun post(@RequestBody builder: Board.Builder, principal: Mono<Principal>) = principal
+        .map { it as GameAuthentication }
+        .flatMap {
+            boardProvider.create(Board(id = UUID.randomUUID().toString()).addPlayer(it.user.id))
+        }
+        .map { convertToBoardDto(it) }
+        .doOnNext { messageBus.notifySubscribers(BoardCreatedMessage(it)) }
         .map { ok().body(it) }
         .onErrorResume {
             when (it) {
                 is BoardAlreadyExistsException -> Mono.just(
-                    status(HttpStatus.CONFLICT).build<Board>()
+                    status(HttpStatus.CONFLICT).build<BoardDto>()
                 )
                 else -> Mono.error(it)
             }

@@ -16,7 +16,7 @@ export default combineEpics(
     filter(action => action.type === CREATE_BOARD),
     flatMap(action => ajax.post(`/api/boards`, {}, {'Content-Type': 'application/json'})),
     map(r => r.response),
-    flatMap(board => of(boardLoaded(board), push(`/boards/${board.id}`))) // TODO: возможно, нужен более специфичный экшн
+    flatMap(board => of(push(`/boards/${board.id}`))) // TODO: возможно, нужен более специфичный экшн
   ),
   (actions, state) => actions.pipe(
     filter(action => action.type === LOAD_BOARD_LIST),

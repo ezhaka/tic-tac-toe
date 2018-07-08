@@ -1,6 +1,7 @@
 import { WebSocketSubject } from 'rxjs/webSocket'
 import { retryWhen } from 'rxjs/operators'
 import {reportError, SEND_WEB_SOCKET_MESSAGE} from "./actions";
+import {tap} from "rxjs/operators";
 
 let socket;
 
@@ -9,7 +10,7 @@ function init(dispatch) {
 
   socket
     .pipe(retryWhen(
-      errors => errors.do(e => dispatch(reportError(e)))
+      errors => errors.pipe(tap(e => dispatch(reportError(e))))
     ))
     .subscribe({
       next(value) {

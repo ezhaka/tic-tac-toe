@@ -10,8 +10,8 @@ import java.util.*
  */
 data class Board(
     val id: String,
-    val moves: List<Move>,
-    val players: Set<Player>,
+    val moves: List<Move> = emptyList(),
+    val players: Set<Player> = emptySet(),
     val createdDate: Instant = Instant.now()
 ) {
     val isFinished: Boolean = checkIsFinished()

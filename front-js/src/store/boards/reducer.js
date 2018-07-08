@@ -1,4 +1,4 @@
-import {BOARD_LIST_LOADED, BOARD_LOADED, MOVE_MADE, PLAYER_JOINED} from "./actions";
+import {BOARD_CREATED, BOARD_LIST_LOADED, BOARD_LOADED, MOVE_MADE, PLAYER_JOINED} from "./actions";
 import {keyBy} from 'lodash'
 
 const initialState = { entities: {} };
@@ -22,6 +22,9 @@ export default function(state = initialState, action) {
 
     case BOARD_LOADED:
       return updateBoard(action.board.id, () => action.board)
+
+    case BOARD_CREATED:
+      return updateBoard(action.payload.board.id, () => action.payload.board)
 
     case BOARD_LIST_LOADED:
       return { entities: keyBy(action.boards, board => board.id) }

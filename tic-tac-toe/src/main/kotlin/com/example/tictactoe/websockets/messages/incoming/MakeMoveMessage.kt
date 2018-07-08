@@ -8,7 +8,6 @@ import com.example.tictactoe.websockets.messages.MessageType
  * @date 27.06.18
  */
 class MakeMoveMessage(
-    userId: String?,
     boardId: String,
     val coordinates: Coordinates
 ) : IncomingBoardMessage(boardId, MessageType.MAKE_MOVE)
