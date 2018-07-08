@@ -6,9 +6,11 @@ import {Provider} from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router'
 import configureStore from "./store/configureStore";
 import { createBrowserHistory } from 'history'
+import { AUTHENTICATE } from './store/authentication/actions'
 
 const history = createBrowserHistory()
-const store = configureStore(history);
+const store = configureStore(history)
+store.dispatch({ type: AUTHENTICATE })
 
 ReactDOM.render(
   <Provider store={store}>

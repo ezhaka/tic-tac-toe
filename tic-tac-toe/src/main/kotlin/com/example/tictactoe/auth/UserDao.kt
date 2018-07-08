@@ -3,13 +3,19 @@ package com.example.tictactoe.auth
 import java.util.concurrent.ConcurrentHashMap
 
 class UserDao {
-    val users = ConcurrentHashMap<String, User>()
+    private val users = ConcurrentHashMap<String, User>()
 
-    fun getUser(token: String): User? {
-        return users[token]
+    fun getUserByToken(token: String): User? {
+        return users.values.find { it.token == token }
     }
 
     fun add(user: User) {
-        users[user.token] = user
+        users[user.id] = user
+    }
+
+    fun getUsers(ids: List<String>): List<User> {
+        return ids.map {
+            users[it] ?: throw NoSuchElementException("Unable to find user with id $it")
+        }
     }
 }

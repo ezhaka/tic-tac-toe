@@ -1,15 +1,5 @@
 import React, { Component } from 'react'
-
-function Icon({type}) {
-  switch (type) {
-    case 'UNICORN':
-      return <span className="board-icon" role="img" aria-label="Unicorn">🦄</span>
-    case 'HEDGEHOG':
-      return <span className="board-icon" role="img" aria-label="Unicorn">🦔</span>
-    default:
-      throw new Error(`Unkonwn icon type ${type}`)
-  }
-}
+import Emoji from './Emoji'
 
 export default class BoardCell extends Component {
   handleClick = () => {
@@ -20,7 +10,9 @@ export default class BoardCell extends Component {
     const {coordinates, iconType} = this.props
 
     return <td key={coordinates.column} onClick={this.handleClick}>
-      {iconType && <Icon type={iconType}/>}
+      <span className="board-icon">
+        {iconType && <Emoji type={iconType}/>}
+      </span>
     </td>
   }
 }

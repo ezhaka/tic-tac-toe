@@ -29,7 +29,7 @@ class MainController {
     }
 
     // TODO: remove
-    @GetMapping("/greet")
+    @GetMapping("/api/greet")
     fun greet(principal: Mono<Principal>): Mono<ResponseEntity<String>> {
         return principal
             .map { it.name }

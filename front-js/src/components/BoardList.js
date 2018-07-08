@@ -19,7 +19,6 @@ class BoardListItem extends Component {
     const { board, isFirst } = this.props
 
     return <ListItem
-      key={board.id}
       justify={'between'}
       separator={isFirst ? 'horizontal' : undefined}
       onClick={this.handleClick}
@@ -53,7 +52,12 @@ class BoardList extends Component {
       <Section>
         <List>
           {this.props.boards.map((board, index) => (
-            <BoardListItem board={board} isFirst={index === 0} onClick={this.handleBoardClick}/>
+            <BoardListItem
+              key={board.id}
+              board={board}
+              isFirst={index === 0}
+              onClick={this.handleBoardClick}
+            />
           ))}
         </List>
       </Section>

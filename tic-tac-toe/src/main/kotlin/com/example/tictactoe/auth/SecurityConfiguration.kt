@@ -1,19 +1,25 @@
 package com.example.tictactoe.auth
 
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpCookie
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.web.server.ServerWebExchange
-import org.springframework.web.server.WebFilter
-import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
+import org.springframework.security.authentication.ReactiveAuthenticationManager
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
+import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
+import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
 import java.util.*
 
 
@@ -22,35 +28,49 @@ import java.util.*
  * @date 23.06.18
  */
 @EnableWebFluxSecurity
-class SecurityConfiguration {
+class SecurityConfiguration() {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
-        val filter = AuthenticationWebFilter({ Mono.just(it) })
+        val securityContextRepository = WebSessionServerSecurityContextRepository()
+        val filter = AuthenticationWebFilter { Mono.just(it) } // TODO: надо проверять, что у нас такой юзер и правда есть
 
         filter.setAuthenticationConverter { exchange ->
-            val tokenCookieKey = "token"
-            val tokenCookie: HttpCookie? = exchange.request.cookies.getFirst(tokenCookieKey)
-            val user = if (tokenCookie === null) {
-                generateNewUser(exchange, tokenCookieKey)
-            } else {
-                userDao().getUser(tokenCookie.value) ?: generateNewUser(exchange, tokenCookieKey)
-            }
+            ReactiveSecurityContextHolder.getContext()
+                .filter { it.authentication !== null }
+                .map { it.authentication }
+                .switchIfEmpty(
+                    Mono.just(GameAuthentication(User(UUID.randomUUID().toString(), generateUserName(), "")))
+                        .doOnNext { log.info("New user generated: ${it.user}") } // TODO: remove
+                )
+        }
 
-            Mono.just(GameAuthentication(user))
+        filter.setRequiresAuthenticationMatcher(
+            AndServerWebExchangeMatcher(
+                ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, "/api/auth")
+//                ServerWebExchangeMatcher { _ ->
+//                    ReactiveSecurityContextHolder.getContext()
+//                        .filter { it.authentication !== null }
+//                        .flatMap { ServerWebExchangeMatcher.MatchResult.notMatch() }
+//                        .switchIfEmpty(ServerWebExchangeMatcher.MatchResult.match())
+//                }
+            )
+        )
+
+        filter.setSecurityContextRepository(securityContextRepository)
+
+        filter.setAuthenticationSuccessHandler { webFilterExchange, authentication ->
+            val response = webFilterExchange.exchange.response
+            response.statusCode = HttpStatus.OK
+            userDao().add((authentication as GameAuthentication).user) // TODO: некрасивый каст
+            Mono.empty()
         }
 
         return http
             .csrf().disable() // TODO: а может не надо? (вырубил, потому что не работает ajax POST)
             .addFilterAt(filter, SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
-    }
-
-    private fun generateNewUser(exchange: ServerWebExchange, tokenCookieKey: String): User {
-        val token = UUID.randomUUID().toString()
-        val user = User(UUID.randomUUID().toString(), generateUserName(), token)
-        userDao().add(user)
-        exchange.response.addCookie(ResponseCookie.from(tokenCookieKey, token).build())
-        return user
     }
 
     @Bean

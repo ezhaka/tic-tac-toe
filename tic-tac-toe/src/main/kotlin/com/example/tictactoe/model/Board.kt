@@ -55,6 +55,11 @@ data class Board(
     fun getPlayer(userId: String) = players.first { it.userId == userId }
 
     fun addPlayer(userId: String): Board {
+        val existingPlayer = players.firstOrNull { it.userId == userId }
+        if (existingPlayer != null) {
+            return this
+        }
+
         val nextPlayerIconOrdinal = players.size
         if (nextPlayerIconOrdinal >= PlayerIconType.values().size) {
             throw IllegalStateException("Maximum number of players reached")
