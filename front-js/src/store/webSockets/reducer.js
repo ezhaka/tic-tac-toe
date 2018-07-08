@@ -1,10 +1,12 @@
-import {REPORT_WEB_SOCKET_ERROR} from "./actions";
+import {WEB_SOCKET_CONNECTION_CLOSED, WEB_SOCKET_CONNECTION_OPENED} from "./actions";
 
 export default function (state = {}, action) {
   switch (action.type) {
     // TODO: как выйти из этого состояния?
-    case REPORT_WEB_SOCKET_ERROR:
-      return { connectionState: 'DISCONNECTED' }
+    case WEB_SOCKET_CONNECTION_CLOSED:
+      return { connectionState: 'CLOSED' }
+    case WEB_SOCKET_CONNECTION_OPENED:
+      return { connectionState: 'OPENED' }
     default:
       return state
   }
