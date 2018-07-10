@@ -40,7 +40,7 @@ class BoardProvider() {
 
     fun getActive() = Flux.fromStream(
         map.values.stream()
-            .filter { !it.isFinished }
+            .filter { it.winner == null }
             .sorted(Comparator.comparing<Board, Instant> { it.createdDate }.reversed())
     )
 }

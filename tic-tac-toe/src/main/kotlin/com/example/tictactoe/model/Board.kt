@@ -1,60 +1,52 @@
 package com.example.tictactoe.model
 
 import java.time.Instant
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*
+
+const val BOARD_SIZE = 10
+
+/**
+ * see [m,n,k-game](https://en.wikipedia.org/wiki/M,n,k-game)
+ */
+const val K_PARAM = 4
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
  * @date 27.06.18
  */
 data class Board(
-    val id: String,
+    val id: String = UUID.randomUUID().toString(),
     val moves: List<Move> = emptyList(),
     val players: Set<Player> = emptySet(),
-    val createdDate: Instant = Instant.now()
+    val createdDate: Instant = Instant.now(),
+    val winner: Winner? = null
 ) {
-    val isFinished: Boolean = checkIsFinished()
-
-    private constructor(builder: Builder) : this(builder.id, builder.moves, builder.players, builder.createdDate)
+    fun makeMove(userId: String, row: Int, column: Int) = makeMove(Move(userId, Coordinates(row, column)))
 
     fun makeMove(move: Move): Board {
+        require(winner == null)
+        require(move.coordinates.row in 0..(BOARD_SIZE - 1) && move.coordinates.column in 0..(BOARD_SIZE - 1))
         val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
 
         if (!canMakeMove) {
-            throw RuntimeException("tried to make move out of order") // TODO: message
+            throw RuntimeException("Tried to make a move out of order") // TODO: message
         }
 
-        if (movesMap().containsKey(move.coordinates)) {
-            throw RuntimeException("somebody already made a move") // TODO: message
+        if (movesMap(moves).containsKey(move.coordinates)) {
+            throw RuntimeException("Somebody already made a move") // TODO: message
         }
 
-        // TODO: проверить, что координаты адекватные
-        return copy(moves = moves + move)
+        return copy(moves = moves + move, winner = WinnerCalculator(movesMap(moves + move), move).get())
     }
 
-    fun addPlayer(player: Player): Board {
-        // TODO: check if player already exist
-        return copy(players = players + player)
-    }
-
-    fun movesMap(): Map<Coordinates, Move> {
+    private fun movesMap(moves: List<Move>): Map<Coordinates, Move> {
         return moves.map { Pair(it.coordinates, it) }.toMap()
-    }
-
-    fun checkIsFinished(): Boolean {
-        // TODO
-        return false
-    }
-
-    fun getPlayerIconType(userId: String): PlayerIconType {
-        val (_, iconType) = getPlayer(userId)
-        return iconType
     }
 
     fun getPlayer(userId: String) = players.first { it.userId == userId }
 
     fun addPlayer(userId: String): Board {
+        require(winner == null)
         val existingPlayer = players.firstOrNull { it.userId == userId }
         if (existingPlayer != null) {
             return this
@@ -62,23 +54,10 @@ data class Board(
 
         val nextPlayerIconOrdinal = players.size
         if (nextPlayerIconOrdinal >= PlayerIconType.values().size) {
-            throw IllegalStateException("Maximum number of players reached")
+            throw IllegalStateException("Maximum number of players has reached")
         }
 
         val iconType = PlayerIconType.values()[nextPlayerIconOrdinal]
-        return addPlayer(Player(userId, iconType))
-    }
-
-    fun removePlayer(userId: String): Board {
-        return copy(players = players.filter { it.userId != userId }.toHashSet())
-    }
-
-    class Builder {
-        var id: String = UUID.randomUUID().toString()
-        var moves: List<Move> = ArrayList()
-        var players: Set<Player> = HashSet()
-        var createdDate: Instant = Instant.now()
-
-        fun build() = Board(this)
+        return copy(players = players + Player(userId, iconType))
     }
 }

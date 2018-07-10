@@ -29,7 +29,7 @@ class BoardController(val boardProvider: BoardProvider, val userDao: UserDao, va
     }
 
     @PostMapping
-    fun post(@RequestBody builder: Board.Builder, principal: Mono<Principal>) = principal
+    fun post(principal: Mono<Principal>) = principal
         .map { it as GameAuthentication }
         .flatMap {
             boardProvider.create(Board(id = UUID.randomUUID().toString()).addPlayer(it.user.id))

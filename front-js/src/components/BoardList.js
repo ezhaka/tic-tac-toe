@@ -33,7 +33,7 @@ class BoardListItem extends Component {
         <Value
           size="small"
           value={board.players.length}
-          icon={<GroupIcon size="small"/>}
+          // icon={<GroupIcon size="small"/>}
           units='/&nbsp;10'
         />
       </td>

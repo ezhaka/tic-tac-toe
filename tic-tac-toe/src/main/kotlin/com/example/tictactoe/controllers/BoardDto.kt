@@ -1,10 +1,7 @@
 package com.example.tictactoe.controllers
 
 import com.example.tictactoe.auth.User
-import com.example.tictactoe.model.Board
-import com.example.tictactoe.model.Move
-import com.example.tictactoe.model.Player
-import com.example.tictactoe.model.PlayerIconType
+import com.example.tictactoe.model.*
 import java.time.Instant
 
 class UserDto(
@@ -25,7 +22,8 @@ class BoardDto(
     val id: String,
     val moves: List<Move>,
     val players: List<PlayerDto>,
-    val createdDate: Instant
+    val createdDate: Instant,
+    val winner: Winner?
 )
 
 fun createBoardDto(board: Board, users: List<User>): BoardDto {
@@ -38,6 +36,7 @@ fun createBoardDto(board: Board, users: List<User>): BoardDto {
             val user = usersById[it.userId] ?: throw NoSuchElementException("Unable to find user ${it.userId}")
             PlayerDto(it, user)
         },
-        board.createdDate
+        board.createdDate,
+        board.winner
     )
 }
