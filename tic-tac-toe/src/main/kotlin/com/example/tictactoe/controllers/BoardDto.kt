@@ -1,7 +1,11 @@
 package com.example.tictactoe.controllers
 
 import com.example.tictactoe.auth.User
-import com.example.tictactoe.model.*
+import com.example.tictactoe.model.Board
+import com.example.tictactoe.model.Move
+import com.example.tictactoe.model.Player
+import com.example.tictactoe.model.Winner
+import com.example.tictactoe.model.PlayerIconType
 import java.time.Instant
 
 class UserDto(

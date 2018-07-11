@@ -8,12 +8,18 @@ import com.example.tictactoe.model.BoardProvider
 import com.example.tictactoe.websockets.MessageBus
 import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity.*
-import org.springframework.web.bind.annotation.*
+import org.springframework.http.ResponseEntity.notFound
+import org.springframework.http.ResponseEntity.ok
+import org.springframework.http.ResponseEntity.status
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.security.Principal
-import java.util.*
+import java.util.UUID
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>

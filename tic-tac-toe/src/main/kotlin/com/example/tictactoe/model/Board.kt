@@ -1,7 +1,7 @@
 package com.example.tictactoe.model
 
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 const val BOARD_SIZE = 10
 

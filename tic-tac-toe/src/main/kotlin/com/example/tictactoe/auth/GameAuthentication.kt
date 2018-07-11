@@ -2,7 +2,7 @@ package com.example.tictactoe.auth
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
-import java.util.*
+import java.util.Collections
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>

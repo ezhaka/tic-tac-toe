@@ -2,15 +2,16 @@ package com.example.tictactoe.websockets
 
 import com.example.tictactoe.auth.GameAuthentication
 import com.example.tictactoe.websockets.messages.Message
-import com.example.tictactoe.websockets.messages.incoming.*
-import org.springframework.web.reactive.socket.WebSocketHandler
-import org.springframework.web.reactive.socket.WebSocketSession
-import reactor.core.publisher.Mono
+import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
+import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketMessage
+import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.security.Principal
 import java.util.function.BiFunction
 import javax.naming.AuthenticationException
@@ -26,7 +27,6 @@ class GameWebSocketHandler(
 ) : WebSocketHandler {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-
 
     override fun handle(session: WebSocketSession): Mono<Void> {
         val input = Flux.combineLatest(
@@ -53,7 +53,7 @@ class GameWebSocketHandler(
         val output = session.send(
             messageBus
                 .observe()
-                .doOnNext { println("processed ${it}") }
+                .doOnNext { println("processed $it") }
                 .map { session.textMessage(toJson(it)) }
         ).then()
 
@@ -67,5 +67,4 @@ class GameWebSocketHandler(
     private fun toJson(m: Message): String {
         return objectMapper.writeValueAsString(m)
     }
-
 }

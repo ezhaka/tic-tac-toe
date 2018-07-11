@@ -2,26 +2,19 @@ package com.example.tictactoe.auth
 
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
-import org.springframework.http.HttpCookie
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseCookie
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
-import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
-import org.springframework.web.server.ServerWebExchange
-import reactor.core.publisher.Mono
-import org.springframework.security.authentication.ReactiveAuthenticationManager
-import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
 import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
-import java.util.*
-
+import reactor.core.publisher.Mono
+import java.util.UUID
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -78,5 +71,4 @@ class SecurityConfiguration() {
     fun userDao(): UserDao {
         return UserDao()
     }
-
 }

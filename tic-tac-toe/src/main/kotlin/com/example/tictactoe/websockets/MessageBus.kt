@@ -1,12 +1,13 @@
 package com.example.tictactoe.websockets
 
 import com.example.tictactoe.controllers.PlayerDto
-import com.example.tictactoe.model.Board
 import com.example.tictactoe.model.BoardProvider
 import com.example.tictactoe.model.Move
 import com.example.tictactoe.websockets.messages.Message
-import com.example.tictactoe.websockets.messages.incoming.*
-import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
+import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
+import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
+import com.example.tictactoe.websockets.messages.incoming.JoinBoardMessage
+import com.example.tictactoe.websockets.messages.incoming.MakeMoveMessage
 import com.example.tictactoe.websockets.messages.outgoing.MoveMadeMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerJoinedMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
@@ -34,7 +35,7 @@ class MessageBus(val boardProvider: BoardProvider) {
 
     // TODO: OutgoingMessage?
     private val incomingMessageProcessor: ConnectableFlux<out Message> = processor
-        .doOnNext { log.info("Received message ${it}") }
+        .doOnNext { log.info("Received message $it") }
         .groupBy { it.message.boardId }
         .flatMap { it.concatMap(this::processIncomingMessage) }
         .retry {

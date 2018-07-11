@@ -1,6 +1,5 @@
 package com.example.tictactoe.model
 
-import com.example.tictactoe.websockets.MessageBus
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

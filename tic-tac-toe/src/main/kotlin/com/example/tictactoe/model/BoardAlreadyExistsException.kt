@@ -6,4 +6,4 @@ package com.example.tictactoe.model
  */
 class BoardAlreadyExistsException(
     boardId: String
-) : RuntimeException("Board with id ${boardId} already exists")
+) : RuntimeException("Board with id $boardId already exists")
