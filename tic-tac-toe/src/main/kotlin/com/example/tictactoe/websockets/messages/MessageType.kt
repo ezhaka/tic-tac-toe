@@ -7,4 +7,5 @@ enum class MessageType {
     JOIN_BOARD,
     PLAYER_JOINED,
     PLAYER_DISCONNECTED,
+    PLAYER_WON
 }

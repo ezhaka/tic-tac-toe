@@ -2,6 +2,7 @@ import {SEND_WEB_SOCKET_MESSAGE} from "../webSockets/actions";
 
 export const PLAYER_JOINED = 'PLAYER_JOINED'
 export const MOVE_MADE = 'MOVE_MADE'
+export const PLAYER_WON = 'PLAYER_WON'
 
 export const CREATE_BOARD = 'CREATE_BOARD'
 export const BOARD_CREATED = 'BOARD_CREATED'

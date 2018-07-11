@@ -23,10 +23,10 @@ class BoardProvider() {
         return getById(boardId).defaultIfEmpty(Board(boardId, emptyList(), emptySet()))
     }
 
-    fun update(board: Board): Mono<Void> {
+    fun update(board: Board): Mono<Board> {
         // TODO: проверить, что такая борда уже есть
         map[board.id] = board
-        return Mono.empty()
+        return Mono.just(board)
     }
 
     fun create(board: Board): Mono<Board> {

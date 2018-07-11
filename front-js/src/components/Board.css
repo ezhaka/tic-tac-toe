@@ -14,8 +14,13 @@
     border-style: hidden;
 }
 
+/* TODO: to cell */
 .board td {
     position: relative;
+}
+
+.board .board-cell.loser {
+    filter: grayscale(100%);
 }
 
 .board td:after {

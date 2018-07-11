@@ -16,6 +16,7 @@ import FormPreviousIcon from 'grommet/components/icons/base/FormPrevious'
 import PreviousIcon from 'grommet/components/icons/base/Previous'
 import Anchor from 'grommet/components/Anchor'
 import {push} from 'connected-react-router'
+import StatusString from "./StatusString";
 
 class BoardPage extends Component {
   handleBackAnchorClick = () => {
@@ -42,7 +43,7 @@ class BoardPage extends Component {
       <Split showOnResponsive={'both'} flex={'left'} separator={true}>
         <Box pad={'medium'}>
           <Board boardId={boardId}/>
-          {isActivePlayer && <Label align="center">Your turn!</Label>}
+          <StatusString boardId={boardId}/>
         </Box>
         <Box pad={'medium'}>
           <PlayersList boardId={boardId}/>
@@ -54,14 +55,11 @@ class BoardPage extends Component {
 
 const mapStateToProps = (state, {match}) => {
   const boardId = match.params.id
-
-  console.log(selectors)
   const board = selectors.getBoardById(state, boardId);
 
   return {
     boardId,
-    isLoading: !board,
-    isActivePlayer: selectors.isActivePlayer(state, boardId)
+    isLoading: !board
   }
 }
 

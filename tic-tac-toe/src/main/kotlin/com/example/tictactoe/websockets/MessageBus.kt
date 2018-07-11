@@ -9,6 +9,7 @@ import com.example.tictactoe.websockets.messages.incoming.*
 import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
 import com.example.tictactoe.websockets.messages.outgoing.MoveMadeMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerJoinedMessage
+import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.ConnectableFlux
@@ -64,7 +65,13 @@ class MessageBus(val boardProvider: BoardProvider) {
 
                 boardProvider.getByIdOrDefault(message.boardId)
                     .flatMap { boardProvider.update(it.makeMove(move)) }
-                    .thenReturn(MoveMadeMessage(message.boardId, move))
+                    .map {
+                        if (it.winner != null) {
+                            PlayerWonMessage(message.boardId, move, it.winner)
+                        } else {
+                            MoveMadeMessage(message.boardId, move)
+                        }
+                    }
             }
 
             is JoinBoardMessage -> boardProvider.getByIdOrDefault(message.boardId)
