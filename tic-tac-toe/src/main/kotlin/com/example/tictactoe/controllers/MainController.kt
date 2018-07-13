@@ -21,7 +21,7 @@ class MainController {
 
     @GetMapping("/", produces = ["text/html"])
     fun main(principal: Mono<Principal>): ResponseEntity<Resource> {
-        val resource = ClassPathResource("templates/main.html")
+        val resource = ClassPathResource("web/index.html")
         return ResponseEntity.ok().body(resource)
     }
 

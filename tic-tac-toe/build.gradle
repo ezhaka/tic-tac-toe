@@ -17,6 +17,7 @@ buildscript {
 	}
 }
 
+apply plugin: 'idea'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'
 apply plugin: 'org.springframework.boot'
@@ -46,6 +47,12 @@ repositories {
 	jcenter()
 }
 
+idea {
+	module {
+		outputDir file('build/classes/main')
+		testOutputDir file('build/classes/test')
+	}
+}
 
 dependencies {
 //	compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
@@ -58,3 +65,17 @@ dependencies {
 	testCompile('io.projectreactor:reactor-test')
 	testCompile('org.springframework.security:spring-security-test')
 }
+
+task copyWebStatic(type: Copy) {
+	def copySpec = copySpec { from rootProject.project(':front-js').tasks.build }
+
+	into 'build'
+	into('resources/main/web') {
+		with copySpec
+	}
+	into('classes/main/web') {
+		with copySpec
+	}
+}
+
+bootJar.dependsOn(copyWebStatic)

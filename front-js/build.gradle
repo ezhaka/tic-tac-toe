@@ -1,3 +1,22 @@
 plugins {
     id "com.moowork.node" version "1.2.0"
 }
+
+node {
+    version = '8.11.3'
+    download = true
+}
+
+task build {
+    inputs.files(project.fileTree('.') {
+        exclude 'build/**'
+        exclude '.idea/**'
+        exclude '*.iml'
+        exclude 'build.gradle'
+        exclude '.gradle'
+    })
+
+    outputs.dir('build')
+}
+
+build.dependsOn(yarn_run_build)

@@ -8,3 +8,7 @@ task copyToLib(type: Copy) {
 
 copyToLib.dependsOn(build)
 stage.dependsOn(copyToLib)
+
+clean.doLast {
+    delete "$rootProject.buildDir/libs"
+}
