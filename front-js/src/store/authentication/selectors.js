@@ -1,8 +1,7 @@
-import globalizeSelectors, {fromRoot} from "../../utils/globalizeSelectors";
-import {curry} from "lodash";
+import { fromRoot } from "../../utils/globalizeSelectors";
 
-const globalize = fromRoot('authentication')
+const globalize = fromRoot("authentication");
 
 export default {
   getCurrentUser: globalize(state => state.currentUser)
-}
+};

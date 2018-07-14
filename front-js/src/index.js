@@ -1,23 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './components/App';
-import registerServiceWorker from './registerServiceWorker';
-import {Provider} from 'react-redux';
-import { ConnectedRouter } from 'connected-react-router'
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { ConnectedRouter } from "connected-react-router";
+import { createBrowserHistory } from "history";
+import App from "./components/App";
+import registerServiceWorker from "./registerServiceWorker";
 import configureStore from "./store/configureStore";
-import { createBrowserHistory } from 'history'
-import { AUTHENTICATE } from './store/authentication/actions'
+import { AUTHENTICATE } from "./store/authentication/actions";
 
-const history = createBrowserHistory()
-const store = configureStore(history)
-store.dispatch({ type: AUTHENTICATE })
+const history = createBrowserHistory();
+const store = configureStore(history);
+store.dispatch({ type: AUTHENTICATE });
 
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <App/>
+      <App />
     </ConnectedRouter>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 registerServiceWorker();

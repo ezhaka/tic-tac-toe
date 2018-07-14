@@ -1,66 +1,63 @@
-import React, {Component} from 'react'
-import Board from "./Board";
-import PlayersList from './PlayersList'
-import {loadBoard} from "../store/boards/actions";
-import {bindActionCreators} from "redux";
-import {connect} from "react-redux";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import Split from "grommet/components/Split";
+import Box from "grommet/components/Box";
+import PreviousIcon from "grommet/components/icons/base/Previous";
+import Anchor from "grommet/components/Anchor";
+import { push } from "connected-react-router";
 import selectors from "../store/boards/selectors";
-import Label from 'grommet/components/Label'
-import Section from 'grommet/components/Section'
-import Columns from 'grommet/components/Columns'
-import Split from 'grommet/components/Split'
-import Box from 'grommet/components/Box'
-import {Link} from "react-router-dom";
-import CaretBackIcon from 'grommet/components/icons/base/CaretBack'
-import FormPreviousIcon from 'grommet/components/icons/base/FormPrevious'
-import PreviousIcon from 'grommet/components/icons/base/Previous'
-import Anchor from 'grommet/components/Anchor'
-import {push} from 'connected-react-router'
+import PlayersList from "./PlayersList";
+import Board from "./Board";
 import StatusString from "./StatusString";
 
 class BoardPage extends Component {
   handleBackAnchorClick = () => {
-    this.props.push('/')
-  }
+    this.props.push("/");
+  };
 
   render() {
-    const {boardId, isLoading, isActivePlayer} = this.props;
+    const { boardId, isLoading } = this.props;
 
     // TODO: убрать
     if (isLoading) {
-      return <span>Загрузочка...</span>
+      return <span>Загрузочка...</span>;
     }
 
-    return <div>
-      <Box pad={{vertical: 'small'}}>
-        <Anchor
-          icon={<PreviousIcon/>}
-          label="Back"
-          primary={false}
-          onClick={this.handleBackAnchorClick}
-        />
-      </Box>
-      <Split showOnResponsive={'both'} flex={'left'} separator={true}>
-        <Box pad={'medium'}>
-          <Board boardId={boardId}/>
-          <StatusString boardId={boardId}/>
+    return (
+      <div>
+        <Box pad={{ vertical: "small" }}>
+          <Anchor
+            icon={<PreviousIcon />}
+            label="Back"
+            primary={false}
+            onClick={this.handleBackAnchorClick}
+          />
         </Box>
-        <Box pad={'medium'}>
-          <PlayersList boardId={boardId}/>
-        </Box>
-      </Split>
-    </div>
+        <Split showOnResponsive="both" flex="left" separator>
+          <Box pad="medium">
+            <Board boardId={boardId} />
+            <StatusString boardId={boardId} />
+          </Box>
+          <Box pad="medium">
+            <PlayersList boardId={boardId} />
+          </Box>
+        </Split>
+      </div>
+    );
   }
 }
 
-const mapStateToProps = (state, {match}) => {
-  const boardId = match.params.id
+const mapStateToProps = (state, { match }) => {
+  const boardId = match.params.id;
   const board = selectors.getBoardById(state, boardId);
 
   return {
     boardId,
     isLoading: !board
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, {push})(BoardPage)
+export default connect(
+  mapStateToProps,
+  { push }
+)(BoardPage);
