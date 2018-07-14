@@ -6,7 +6,7 @@ let socket;
 
 function init(dispatch) {
   socket = new WebSocketSubject({
-    url: 'ws://' + window.location.host + '/websocket',
+    url: (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/websocket',
     openObserver: {
       next: m => {
         dispatch(webSocketConnectionOpened())
