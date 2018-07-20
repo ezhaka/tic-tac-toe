@@ -76,7 +76,9 @@ class MessageBus(val boardProvider: BoardProvider) {
             }
 
             is JoinBoardMessage -> boardProvider.getByIdOrDefault(message.boardId)
-                .map { it.addPlayer(user.id) }
+                .flatMap {
+                    if (!it.hasPlayer(user.id)) Mono.just(it.addPlayer(user.id)) else Mono.empty()
+                }
                 .flatMap { board ->
                     boardProvider
                         .update(board)

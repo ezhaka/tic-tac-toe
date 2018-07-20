@@ -43,8 +43,6 @@ data class Board(
         return moves.map { Pair(it.coordinates, it) }.toMap()
     }
 
-    fun getPlayer(userId: String) = players.first { it.userId == userId }
-
     fun addPlayer(userId: String): Board {
         require(winner == null)
         val existingPlayer = players.firstOrNull { it.userId == userId }
@@ -60,4 +58,11 @@ data class Board(
         val iconType = PlayerIconType.values()[nextPlayerIconOrdinal]
         return copy(players = players + Player(userId, iconType))
     }
+
+    fun getPlayer(userId: String) =
+        getPlayerOrNull(userId) ?: throw NoSuchElementException("There is no player with userId=$userId")
+
+    fun hasPlayer(userId: String) = getPlayerOrNull(userId) != null
+
+    private fun getPlayerOrNull(userId: String) = players.firstOrNull { it.userId == userId }
 }
