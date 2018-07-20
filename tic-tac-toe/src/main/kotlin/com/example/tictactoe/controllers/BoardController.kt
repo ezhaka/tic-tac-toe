@@ -3,14 +3,11 @@ package com.example.tictactoe.controllers
 import com.example.tictactoe.auth.GameAuthentication
 import com.example.tictactoe.auth.UserDao
 import com.example.tictactoe.model.Board
-import com.example.tictactoe.model.BoardAlreadyExistsException
 import com.example.tictactoe.model.BoardProvider
 import com.example.tictactoe.websockets.MessageBus
 import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
-import org.springframework.http.ResponseEntity.status
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.security.Principal
-import java.util.UUID
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -37,23 +33,13 @@ class BoardController(val boardProvider: BoardProvider, val userDao: UserDao, va
     @PostMapping
     fun post(principal: Mono<Principal>) = principal
         .map { it as GameAuthentication }
-        .flatMap {
-            boardProvider.create(Board(id = UUID.randomUUID().toString()).addPlayer(it.user.id))
-        }
+        .flatMap { boardProvider.create(it.user.id) }
         .map { convertToBoardDto(it) }
         .doOnNext { messageBus.notifySubscribers(BoardCreatedMessage(it)) }
         .map { ok().body(it) }
-        .onErrorResume {
-            when (it) {
-                is BoardAlreadyExistsException -> Mono.just(
-                    status(HttpStatus.CONFLICT).build<BoardDto>()
-                )
-                else -> Mono.error(it)
-            }
-        }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String) = boardProvider.getById(id)
+    fun getById(@PathVariable id: Int) = boardProvider.getById(id)
         .map { ok().body(convertToBoardDto(it)) }
         .defaultIfEmpty(notFound().build())
 

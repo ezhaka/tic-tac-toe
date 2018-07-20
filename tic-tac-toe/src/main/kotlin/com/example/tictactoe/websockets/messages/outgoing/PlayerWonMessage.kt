@@ -10,7 +10,7 @@ import com.example.tictactoe.websockets.messages.MessageType
  * @date 11.07.18
  */
 class PlayerWonMessage(
-    val boardId: String,
+    val boardId: Int,
     val move: Move,
     val winner: Winner
 ) : Message(MessageType.PLAYER_WON)

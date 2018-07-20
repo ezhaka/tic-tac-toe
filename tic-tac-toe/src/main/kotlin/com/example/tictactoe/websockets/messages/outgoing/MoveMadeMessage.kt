@@ -9,6 +9,6 @@ import com.example.tictactoe.websockets.messages.MessageType
  * @date 29.06.18
  */
 class MoveMadeMessage(
-    val boardId: String,
+    val boardId: Int,
     val move: Move
 ) : Message(MessageType.MOVE_MADE)

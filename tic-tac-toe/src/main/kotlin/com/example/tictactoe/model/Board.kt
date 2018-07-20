@@ -1,7 +1,6 @@
 package com.example.tictactoe.model
 
 import java.time.Instant
-import java.util.UUID
 
 const val BOARD_SIZE = 10
 
@@ -15,7 +14,7 @@ const val K_PARAM = 4
  * @date 27.06.18
  */
 data class Board(
-    val id: String = UUID.randomUUID().toString(),
+    val id: Int,
     val moves: List<Move> = emptyList(),
     val players: Set<Player> = emptySet(),
     val createdDate: Instant = Instant.now(),

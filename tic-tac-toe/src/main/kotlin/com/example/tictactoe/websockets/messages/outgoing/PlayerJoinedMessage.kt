@@ -5,6 +5,6 @@ import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.MessageType
 
 class PlayerJoinedMessage(
-    val boardId: String,
+    val boardId: Int,
     val player: PlayerDto
 ) : Message(MessageType.PLAYER_JOINED)

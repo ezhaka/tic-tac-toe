@@ -4,8 +4,8 @@ import com.example.tictactoe.auth.User
 import com.example.tictactoe.model.Board
 import com.example.tictactoe.model.Move
 import com.example.tictactoe.model.Player
-import com.example.tictactoe.model.Winner
 import com.example.tictactoe.model.PlayerIconType
+import com.example.tictactoe.model.Winner
 import java.time.Instant
 
 class UserDto(
@@ -23,7 +23,7 @@ class PlayerDto(
 }
 
 class BoardDto(
-    val id: String,
+    val id: Int,
     val moves: List<Move>,
     val players: List<PlayerDto>,
     val createdDate: Instant,

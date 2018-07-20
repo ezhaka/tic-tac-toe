@@ -15,6 +15,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = JoinBoardMessage::class, name = "JOIN_BOARD")
 )
 abstract class IncomingBoardMessage(
-    val boardId: String,
+    val boardId: Int,
     type: MessageType
 ) : Message(type)

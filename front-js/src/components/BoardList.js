@@ -59,7 +59,7 @@ class BoardList extends Component {
           <Table selectable>
             <thead>
               <tr>
-                <th>Id</th>
+                <th>#</th>
                 <th>Players</th>
                 <th>Updated</th>
               </tr>

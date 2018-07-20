@@ -64,8 +64,8 @@ class MessageBus(val boardProvider: BoardProvider) {
             is MakeMoveMessage -> {
                 val move = Move(user.id, message.coordinates)
 
-                boardProvider.getByIdOrDefault(message.boardId)
-                    .flatMap { boardProvider.update(it.makeMove(move)) }
+                boardProvider.getById(message.boardId)
+                    .flatMap { boardProvider.save(it.makeMove(move)) }
                     .map {
                         if (it.winner != null) {
                             PlayerWonMessage(message.boardId, move, it.winner)
@@ -75,13 +75,13 @@ class MessageBus(val boardProvider: BoardProvider) {
                     }
             }
 
-            is JoinBoardMessage -> boardProvider.getByIdOrDefault(message.boardId)
+            is JoinBoardMessage -> boardProvider.getById(message.boardId)
                 .flatMap {
                     if (!it.hasPlayer(user.id)) Mono.just(it.addPlayer(user.id)) else Mono.empty()
                 }
                 .flatMap { board ->
                     boardProvider
-                        .update(board)
+                        .save(board)
                         .thenReturn(board.getPlayer(user.id))
                 }
                 .map { PlayerJoinedMessage(message.boardId, PlayerDto(it, user)) }
