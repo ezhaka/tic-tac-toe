@@ -24,12 +24,7 @@ class BoardListItem extends Component {
       <TableRow onClick={this.handleClick}>
         <td>{board.id}</td>
         <td className="secondary">
-          <Value
-            size="small"
-            value={board.players.length}
-            // icon={<GroupIcon size="small"/>}
-            units="/&nbsp;10"
-          />
+          <Value size="small" value={board.players.length} units="/&nbsp;10" />
         </td>
         <td className="secondary">
           <Timestamp

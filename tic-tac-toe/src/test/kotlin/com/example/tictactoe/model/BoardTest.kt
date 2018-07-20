@@ -13,7 +13,7 @@ const val SECOND_USER_ID = "second"
 internal class BoardTest {
     @Test
     fun `first player wins`() {
-        val finishedBoard = Board()
+        val finishedBoard = Board(1)
             .addPlayer(FIRST_USER_ID)
             .addPlayer(SECOND_USER_ID)
             .makeMove(FIRST_USER_ID, 0, 0)
@@ -34,7 +34,7 @@ internal class BoardTest {
 
     @Test
     fun `x win`() {
-        val finishedBoard = Board()
+        val finishedBoard = Board(1)
             .addPlayer(FIRST_USER_ID)
             .addPlayer(SECOND_USER_ID)
             .makeMove(FIRST_USER_ID, 0, 0)
@@ -79,7 +79,7 @@ internal class BoardTest {
 
     @Test
     fun `+ win`() {
-        val finishedBoard = Board()
+        val finishedBoard = Board(1)
             .addPlayer(FIRST_USER_ID)
             .addPlayer(SECOND_USER_ID)
             .makeMove(FIRST_USER_ID, 0, 3)

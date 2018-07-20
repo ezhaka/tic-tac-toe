@@ -1,14 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
-import Emoji from "./Emoji";
 import selectors from "../store/boards/selectors";
+import Player from "./Player";
 
 function PlayersList({ players }) {
   return (
     <ul>
       {players.map(player => (
         <li key={player.user.id}>
-          <Emoji type={player.iconType} /> {player.user.name}
+          <Player player={player} />
         </li>
       ))}
     </ul>
