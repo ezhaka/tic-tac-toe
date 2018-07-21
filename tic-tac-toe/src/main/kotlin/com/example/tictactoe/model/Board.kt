@@ -27,13 +27,8 @@ data class Board(
         require(move.coordinates.row in 0..(BOARD_SIZE - 1) && move.coordinates.column in 0..(BOARD_SIZE - 1))
         val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
 
-        if (!canMakeMove) {
-            throw RuntimeException("Tried to make a move out of order") // TODO: message
-        }
-
-        if (movesMap(moves).containsKey(move.coordinates)) {
-            throw RuntimeException("Somebody already made a move") // TODO: message
-        }
+        require(canMakeMove) { "Tried to make a move ($move) out of order" }
+        require(!movesMap(moves).containsKey(move.coordinates)) { "Somebody already made a move (${move.coordinates})" }
 
         return copy(moves = moves + move, winner = WinnerCalculator(movesMap(moves + move), move).get())
     }

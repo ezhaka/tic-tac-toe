@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Emoji from "./Emoji";
+import Emoji from "./Emoji/Emoji";
 
 export const ACTIVE_CELL = "ACTIVE_CELL";
 export const WINNER_CELL = "WINNER_CELL";
@@ -23,9 +23,11 @@ export default class BoardCell extends Component {
         onClick={this.handleClick}
         className={className}
       >
-        <span className="board-icon">
-          {iconType && <Emoji type={iconType} />}
-        </span>
+        <div className="board-cell-content">
+          <div className="board-icon-container">
+            {iconType && <Emoji type={iconType} />}
+          </div>
+        </div>
       </td>
     );
   }
