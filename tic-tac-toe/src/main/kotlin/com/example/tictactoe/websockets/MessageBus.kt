@@ -13,10 +13,9 @@ import com.example.tictactoe.websockets.messages.outgoing.PlayerJoinedMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import reactor.core.publisher.ConnectableFlux
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.core.publisher.TopicProcessor
+import reactor.core.publisher.UnicastProcessor
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -24,39 +23,39 @@ import reactor.core.publisher.TopicProcessor
  */
 @Component
 class MessageBus(val boardProvider: BoardProvider) {
-
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    // TODO: processor лучше разбить на sink и паблишд часть
-    private val processor = TopicProcessor.share<IncomingMessageWrapper<IncomingBoardMessage>>("shared", 1024)
+    private val incomingMessagesProcessor = UnicastProcessor.create<IncomingMessageWrapper<IncomingBoardMessage>>()
+    private val incomingMessagesSink = incomingMessagesProcessor.sink()
 
-    // TODO: разобраться с синками
-    private val outputSink = TopicProcessor.share<Message>("ololo", 1024)
+    private val outgoingMessagesProcessor = UnicastProcessor.create<Message>()
+    private val outgoingMessagesSink = outgoingMessagesProcessor.sink()
 
     // TODO: OutgoingMessage?
-    private val incomingMessageProcessor: ConnectableFlux<out Message> = processor
-        .doOnNext { log.info("Received message $it") }
-        .groupBy { it.message.boardId }
-        .flatMap { it.concatMap(this::processIncomingMessage) }
-        .retry {
-            log.error("An exception occured while processing message", it)
-            true
-        }
+    final val outgoingMessages = Flux.merge(
+        outgoingMessagesProcessor,
+        incomingMessagesProcessor
+            .doOnNext { log.info("Received message $it") }
+            .groupBy { it.message.boardId }
+            .flatMap { it.concatMap(this::processIncomingMessage) }
+            .retry {
+                log.error("An exception occured while processing message", it)
+                true
+            }
+    )
         .publish()
 
     init {
-        incomingMessageProcessor.connect()
+        outgoingMessages.connect()
     }
 
-    fun onNext(messageWrapper: IncomingMessageWrapper<IncomingBoardMessage>) {
-        processor.onNext(messageWrapper)
+    fun onIncomingMessage(messageWrapper: IncomingMessageWrapper<IncomingBoardMessage>) {
+        incomingMessagesSink.next(messageWrapper)
     }
 
-    fun notifySubscribers(message: Message) {
-        outputSink.onNext(message)
+    fun onOutgoingMessage(message: Message) {
+        outgoingMessagesSink.next(message)
     }
-
-    fun observe(): Flux<out Message> = Flux.merge(incomingMessageProcessor, outputSink)
 
     private fun processIncomingMessage(wrapper: IncomingMessageWrapper<IncomingBoardMessage>): Mono<Message> {
         val (message, user) = wrapper

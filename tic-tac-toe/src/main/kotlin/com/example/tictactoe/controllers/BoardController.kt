@@ -35,7 +35,7 @@ class BoardController(val boardProvider: BoardProvider, val userDao: UserDao, va
         .map { it as GameAuthentication }
         .flatMap { boardProvider.create(it.user.id) }
         .map { convertToBoardDto(it) }
-        .doOnNext { messageBus.notifySubscribers(BoardCreatedMessage(it)) }
+        .doOnNext { messageBus.onOutgoingMessage(BoardCreatedMessage(it)) }
         .map { ok().body(it) }
 
     @GetMapping("/{id}")

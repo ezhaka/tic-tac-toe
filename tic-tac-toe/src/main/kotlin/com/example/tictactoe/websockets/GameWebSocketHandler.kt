@@ -40,7 +40,7 @@ class GameWebSocketHandler(
             }
         )
             .doOnNext {
-                messageBus.onNext(it)
+                messageBus.onIncomingMessage(it)
             }
 //            .doOnComplete {
 //                processIncomingMessage(PlayerDisconnectedMessage(session.id))
@@ -51,8 +51,7 @@ class GameWebSocketHandler(
             .then()
 
         val output = session.send(
-            messageBus
-                .observe()
+            messageBus.outgoingMessages
                 .doOnNext { println("processed $it") }
                 .map { session.textMessage(toJson(it)) }
         ).then()
