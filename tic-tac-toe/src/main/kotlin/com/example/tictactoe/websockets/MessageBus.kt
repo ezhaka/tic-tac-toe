@@ -37,10 +37,8 @@ class MessageBus(val boardProvider: BoardProvider) {
         incomingMessagesProcessor
             .doOnNext { log.info("Received message $it") }
             .groupBy { it.message.boardId }
-            .flatMap { it.concatMap(this::processIncomingMessage) }
-            .retry {
-                log.error("An exception occured while processing message", it)
-                true
+            .flatMap {
+                it.concatMap(this::processIncomingMessageSafely)
             }
     )
         .publish()
@@ -55,6 +53,14 @@ class MessageBus(val boardProvider: BoardProvider) {
 
     fun onOutgoingMessage(message: Message) {
         outgoingMessagesSink.next(message)
+    }
+
+    private fun processIncomingMessageSafely(message: IncomingMessageWrapper<IncomingBoardMessage>): Mono<Message> {
+        return this.processIncomingMessage(message)
+            .onErrorResume {
+                log.error("An exception occured while processing message", it)
+                Mono.empty()
+            }
     }
 
     private fun processIncomingMessage(wrapper: IncomingMessageWrapper<IncomingBoardMessage>): Mono<Message> {
