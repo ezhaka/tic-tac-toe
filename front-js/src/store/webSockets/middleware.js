@@ -1,9 +1,9 @@
 import { WebSocketSubject } from "rxjs/webSocket";
-import { retryWhen, repeat } from "rxjs/operators";
 import {
   webSocketConnectionClosed,
+  webSocketConnectionOpened,
   SEND_WEB_SOCKET_MESSAGE,
-  webSocketConnectionOpened
+  OPEN_WEB_SOCKET_CONNECTION
 } from "./actions";
 
 let socket;
@@ -13,40 +13,25 @@ function init(dispatch) {
     url: `${(window.location.protocol === "https:" ? "wss://" : "ws://") +
       window.location.host}/websocket`,
     openObserver: {
-      next: m => {
-        dispatch(webSocketConnectionOpened());
-        console.log("open next", m);
-      }
-    },
-    closeObserver: {
-      next: m => {
-        dispatch(webSocketConnectionClosed());
-        console.log("close next", m);
-      }
-    },
-    closingObserver: {
-      next: m => console.log("closing next", m)
+      next: () => dispatch(webSocketConnectionOpened())
     }
   });
 
-  socket
-    .pipe(
-      retryWhen(errors => errors),
-      repeat()
-    )
-    .subscribe({
-      next(value) {
-        dispatch({ type: value.type, payload: value });
-      },
-      complete() {
-        // TODO: remove
-        console.log("websocket completed");
-      }
-    });
+  socket.subscribe({
+    next(value) {
+      dispatch(value);
+    },
+    complete() {
+      dispatch(webSocketConnectionClosed());
+    },
+    error() {
+      dispatch(webSocketConnectionClosed());
+    }
+  });
 }
 
 export default store => next => action => {
-  if (!socket) {
+  if (action.type === OPEN_WEB_SOCKET_CONNECTION) {
     init(store.dispatch);
   }
 

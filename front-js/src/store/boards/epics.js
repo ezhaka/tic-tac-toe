@@ -1,6 +1,6 @@
 import { ajax } from "rxjs/ajax";
-import { of, EMPTY } from "rxjs";
-import { map, filter, flatMap, tap } from "rxjs/operators";
+import { of } from "rxjs";
+import { map, filter, flatMap } from "rxjs/operators";
 import { combineEpics } from "redux-observable";
 import { push } from "connected-react-router";
 import { boardListLoaded, CREATE_BOARD, LOAD_BOARD_LIST } from "./actions";
@@ -21,10 +21,5 @@ export default combineEpics(
       flatMap(() => ajax(`/api/boards`)),
       map(r => r.response), // TODO: избавиться от копипаста загрузки контента на определённый экшн
       map(boards => boardListLoaded(boards))
-    ),
-  actions =>
-    actions.pipe(
-      tap(a => console.log(a)),
-      flatMap(() => EMPTY)
     )
 );

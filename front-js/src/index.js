@@ -6,11 +6,11 @@ import { createBrowserHistory } from "history";
 import App from "./components/App";
 import registerServiceWorker from "./registerServiceWorker";
 import configureStore from "./store/configureStore";
-import { AUTHENTICATE } from "./store/authentication/actions";
+import { INITIALIZE } from "./store/webSockets/actions";
 
 const history = createBrowserHistory();
 const store = configureStore(history);
-store.dispatch({ type: AUTHENTICATE });
+store.dispatch({ type: INITIALIZE });
 
 ReactDOM.render(
   <Provider store={store}>

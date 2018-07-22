@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		kotlinVersion = '1.2.50'
+		kotlinVersion = '1.2.51'
 		springBootVersion = '2.0.3.RELEASE'
 	}
 	repositories {
@@ -55,7 +55,8 @@ idea {
 }
 
 dependencies {
-//	compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+	// TODO: remove or uncomment
+	//	compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')

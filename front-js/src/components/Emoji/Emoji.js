@@ -38,6 +38,5 @@ function getIcon(type) {
 }
 
 export default function Emoji({ type, size }) {
-  console.log(size);
   return <img alt="" src={getIcon(type)} width={size} />;
 }
