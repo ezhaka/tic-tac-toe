@@ -2,13 +2,12 @@ package com.example.tictactoe.controllers
 
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.Resource
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import reactor.core.publisher.Mono
-import java.security.Principal
+
+const val TEXT_HTML = "text/html"
 
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
@@ -19,17 +18,11 @@ import java.security.Principal
 class MainController {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @GetMapping("/", produces = ["text/html"])
-    fun main(principal: Mono<Principal>): ResponseEntity<Resource> {
-        val resource = ClassPathResource("web/index.html")
-        return ResponseEntity.ok().body(resource)
-    }
+    @GetMapping("/", produces = [TEXT_HTML])
+    fun main() = mainPage()
 
-    // TODO: remove
-    @GetMapping("/api/greet")
-    fun greet(principal: Mono<Principal>): Mono<ResponseEntity<String>> {
-        return principal
-            .map { it.name }
-            .map { name -> ResponseEntity.ok("Hello, $name") }
-    }
+    @GetMapping("/boards/{id}", produces = [TEXT_HTML])
+    fun boardDetails() = mainPage()
+
+    private fun mainPage() = ResponseEntity.ok().body(ClassPathResource("web/index.html"))
 }
