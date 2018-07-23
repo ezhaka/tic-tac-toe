@@ -9,8 +9,10 @@ import { push } from "connected-react-router";
 import { last, get } from "lodash";
 import Table from "grommet/components/Table";
 import TableRow from "grommet/components/TableRow";
+import Title from "grommet/components/Title";
 import selectors from "../store/boards/selectors";
 import { createBoard, joinBoard } from "../store/boards/actions";
+import Header from "./Header";
 
 class BoardListItem extends Component {
   handleClick = () => {
@@ -49,6 +51,9 @@ class BoardList extends Component {
   render() {
     return (
       <div>
+        <Header>
+          <Title>Tic-tac-toe</Title>
+        </Header>
         <Button label="Create board" onClick={this.createBoard} />
         <Section>
           <Table selectable>

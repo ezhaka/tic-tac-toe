@@ -5,13 +5,13 @@ import Player from "./Player";
 
 function PlayersList({ players }) {
   return (
-    <ul>
+    <div>
       {players.map(player => (
-        <li key={player.user.id}>
+        <div key={player.user.id}>
           <Player player={player} />
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
 

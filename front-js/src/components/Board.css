@@ -1,7 +1,6 @@
 .board {
     border-collapse: collapse;
     width: 100%;
-    max-width: 500px;
     table-layout: fixed;
     margin: 0 auto;
 }
