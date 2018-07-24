@@ -21,5 +21,24 @@ export const joinBoard = boardId => ({
 export const createBoard = () => ({ type: CREATE_BOARD });
 
 export const boardCreated = board => ({ type: BOARD_CREATED, board });
-export const moveMade = (boardId, move) => ({ type: MOVE_MADE, boardId, move });
+
+export const moveMade = (boardId, userId, row, column) => ({
+  type: MOVE_MADE,
+  boardId,
+  move: {
+    userId,
+    coordinates: {
+      row,
+      column
+    }
+  }
+});
+
+export const playerWonMessage = (boardId, move, winner) => ({
+  type: PLAYER_WON,
+  boardId,
+  move,
+  winner
+});
+
 export const boardListLoaded = boards => ({ type: BOARD_LIST_LOADED, boards });

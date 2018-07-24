@@ -54,6 +54,9 @@ function setCellValue(object, row, column, value) {
 }
 /* eslint-enable no-param-reassign */
 
+const closedRange = (from, to) =>
+  to > from ? range(from, to + 1) : range(from, to - 1);
+
 function getWinnerCells(board) {
   const winnerCells = {};
 
@@ -62,11 +65,12 @@ function getWinnerCells(board) {
       Math.max(Math.abs(to.row - from.row), Math.abs(to.column - from.column)) +
       1;
 
+    const rowRange = closedRange(from.row, to.row);
+    const columnRange = closedRange(from.column, to.column);
+
     const maybeMultiply = values =>
       values.length === 1 ? times(rangeSize, () => values[0]) : values;
 
-    const rowRange = range(from.row, to.row + 1);
-    const columnRange = range(from.column, to.column + 1);
     const coordinates = zip(
       maybeMultiply(rowRange),
       maybeMultiply(columnRange)
@@ -83,20 +87,16 @@ function getWinnerCells(board) {
 export function mapStateToProps(state, { boardId }) {
   const board = selectors.getBoardById(state, boardId);
   const occupiedCells = {};
-  let winnerCells = null;
 
   for (const move of board.moves) {
     const { row, column } = move.coordinates;
-
     const player = find(board.players, p => p.user.id === move.userId);
-
     const value = { iconType: player.iconType };
+
     setCellValue(occupiedCells, row, column, value);
   }
 
-  if (board.winner) {
-    winnerCells = getWinnerCells(board);
-  }
+  const winnerCells = board.winner && getWinnerCells(board);
 
   return {
     occupiedCells,
