@@ -16,18 +16,23 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 import reactor.core.publisher.Mono
 import java.util.UUID
 
+const val AUTH_URL = "/api/auth"
+
 /**
  * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
  * @date 23.06.18
  */
 @EnableWebFluxSecurity
-class SecurityConfiguration() {
+class SecurityConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         val securityContextRepository = WebSessionServerSecurityContextRepository()
-        val filter = AuthenticationWebFilter { Mono.just(it) } // TODO: надо проверять, что у нас такой юзер и правда есть
+        val filter = AuthenticationWebFilter {
+            it.isAuthenticated = true
+            Mono.just(it)
+        } // TODO: надо проверять, что у нас такой юзер и правда есть
 
         filter.setAuthenticationConverter { exchange ->
             ReactiveSecurityContextHolder.getContext()
@@ -41,7 +46,7 @@ class SecurityConfiguration() {
 
         filter.setRequiresAuthenticationMatcher(
             AndServerWebExchangeMatcher(
-                ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, "/api/auth")
+                ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, AUTH_URL)
 //                ServerWebExchangeMatcher { _ ->
 //                    ReactiveSecurityContextHolder.getContext()
 //                        .filter { it.authentication !== null }
@@ -62,6 +67,20 @@ class SecurityConfiguration() {
         }
 
         return http
+            .authorizeExchange()
+            .pathMatchers(
+                "/",
+                AUTH_URL,
+                "/boards/**",
+                "/static/**",
+                "/service-worker.js",
+                "/favicon.ico",
+                "/manifest.json"
+            )
+            .permitAll()
+            .anyExchange()
+            .authenticated()
+            .and()
             .csrf().disable() // TODO: а может не надо? (вырубил, потому что не работает ajax POST)
             .addFilterAt(filter, SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
