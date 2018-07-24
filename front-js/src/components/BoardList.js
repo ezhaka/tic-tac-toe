@@ -52,7 +52,7 @@ class BoardList extends Component {
     return (
       <div>
         <Header>
-          <Title>Tic-tac-toe</Title>
+          <Title>tic-tac-toe</Title>
         </Header>
         <Button label="Create board" onClick={this.createBoard} />
         <Section>
