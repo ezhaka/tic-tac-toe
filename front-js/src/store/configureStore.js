@@ -19,20 +19,20 @@ export default function configureStore(history) {
 
   const composeEnhancers =
     // eslint-disable-next-line no-underscore-dangle
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    (global && global.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
   const epicMiddleware = createEpicMiddleware();
 
+  const middleware = applyMiddleware(
+    epicMiddleware,
+    webSocketMiddleware,
+    routerMiddleware(history)
+  );
+
   const store = createStore(
-    connectRouter(history)(rootReducer),
+    history ? connectRouter(history)(rootReducer) : rootReducer,
     {},
-    composeEnhancers(
-      applyMiddleware(
-        epicMiddleware,
-        webSocketMiddleware,
-        routerMiddleware(history)
-      )
-    )
+    composeEnhancers(middleware)
   );
 
   epicMiddleware.run(rootEpic);

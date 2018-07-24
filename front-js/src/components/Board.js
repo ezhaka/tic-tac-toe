@@ -54,7 +54,33 @@ function setCellValue(object, row, column, value) {
 }
 /* eslint-enable no-param-reassign */
 
-const mapStateToProps = (state, { boardId }) => {
+function getWinnerCells(board) {
+  const winnerCells = {};
+
+  for (const { to, from } of board.winner.ranges) {
+    const rangeSize =
+      Math.max(Math.abs(to.row - from.row), Math.abs(to.column - from.column)) +
+      1;
+
+    const maybeMultiply = values =>
+      values.length === 1 ? times(rangeSize, () => values[0]) : values;
+
+    const rowRange = range(from.row, to.row + 1);
+    const columnRange = range(from.column, to.column + 1);
+    const coordinates = zip(
+      maybeMultiply(rowRange),
+      maybeMultiply(columnRange)
+    );
+
+    coordinates.forEach(([row, column]) =>
+      setCellValue(winnerCells, row, column, true)
+    );
+  }
+
+  return winnerCells;
+}
+
+export function mapStateToProps(state, { boardId }) {
   const board = selectors.getBoardById(state, boardId);
   const occupiedCells = {};
   let winnerCells = null;
@@ -69,35 +95,14 @@ const mapStateToProps = (state, { boardId }) => {
   }
 
   if (board.winner) {
-    winnerCells = {};
-    for (const { to, from } of board.winner.ranges) {
-      const rangeSize =
-        Math.max(
-          Math.abs(to.row - from.row),
-          Math.abs(to.column - from.column)
-        ) + 1;
-
-      const maybeMultiply = values =>
-        values.length === 1 ? times(rangeSize, () => values[0]) : values;
-
-      const rowRange = range(from.row, to.row + 1);
-      const columnRange = range(from.column, to.column + 1);
-      const coordinates = zip(
-        maybeMultiply(rowRange),
-        maybeMultiply(columnRange)
-      );
-
-      coordinates.forEach(([row, column]) =>
-        setCellValue(winnerCells, row, column, true)
-      );
-    }
+    winnerCells = getWinnerCells(board);
   }
 
   return {
     occupiedCells,
     winnerCells
   };
-};
+}
 
 const mapDispatchToProps = dispatch => ({
   ...bindActionCreators({ makeMove }, dispatch)
