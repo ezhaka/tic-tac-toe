@@ -12,14 +12,12 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.security.web.server.authentication.ServerAuthenticationEntryPointFailureHandler
-import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
-import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher
+import org.springframework.security.web.server.context.ServerSecurityContextRepository
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
 import reactor.core.publisher.Mono
-import reactor.core.publisher.toMono
-import java.util.UUID
 
 const val AUTH_URL = "/api/auth"
+const val TOKEN_COOKIE_KEY = "Token"
 
 @EnableWebFluxSecurity
 class SecurityConfiguration {
@@ -27,44 +25,7 @@ class SecurityConfiguration {
 
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
-        val securityContextRepository = WebSessionServerSecurityContextRepository()
-        val filter = AuthenticationWebFilter {
-            it.isAuthenticated = true
-            Mono.just(it)
-        } // TODO: надо проверять, что у нас такой юзер и правда есть
-
-        filter.setAuthenticationConverter { exchange ->
-            ReactiveSecurityContextHolder.getContext()
-                .filter { it.authentication !== null }
-                .map { it.authentication }
-                .switchIfEmpty(
-                    GameAuthentication(User(UUID.randomUUID().toString(), generateUserName(), ""))
-                        .toMono()
-                        .doOnNext { log.info("New user generated: ${it.user}") } // TODO: remove
-                )
-        }
-
-        filter.setRequiresAuthenticationMatcher(
-            AndServerWebExchangeMatcher(
-                ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, AUTH_URL)
-//                ServerWebExchangeMatcher { _ ->
-//                    ReactiveSecurityContextHolder.getContext()
-//                        .filter { it.authentication !== null }
-//                        .flatMap { ServerWebExchangeMatcher.MatchResult.notMatch() }
-//                        .switchIfEmpty(ServerWebExchangeMatcher.MatchResult.match())
-//                }
-            )
-        )
-
-        filter.setSecurityContextRepository(securityContextRepository)
-
-        filter.setAuthenticationSuccessHandler { webFilterExchange, authentication ->
-            val response = webFilterExchange.exchange.response
-            response.statusCode = HttpStatus.OK
-            userDao().add((authentication as GameAuthentication).user) // TODO: некрасивый каст
-            val exchange = webFilterExchange.exchange
-            webFilterExchange.chain.filter(exchange)
-        }
+        val securityContextRepository = TokenBasedSecurityContextRepository(userDao())
 
         val authenticationEntryPoint = ServerAuthenticationEntryPoint { exchange, _ ->
             Mono.fromRunnable {
@@ -72,9 +33,10 @@ class SecurityConfiguration {
             }
         }
 
-        filter.setAuthenticationFailureHandler(ServerAuthenticationEntryPointFailureHandler(authenticationEntryPoint))
+        val filter = authenticationWebFilter(securityContextRepository, authenticationEntryPoint)
 
         return http
+            .securityContextRepository(securityContextRepository)
             .authorizeExchange()
             .pathMatchers(
                 "/",
@@ -100,5 +62,35 @@ class SecurityConfiguration {
     @Bean
     fun userDao(): UserDao {
         return UserDao()
+    }
+
+    private fun authenticationWebFilter(
+        securityContextRepository: ServerSecurityContextRepository,
+        authenticationEntryPoint: ServerAuthenticationEntryPoint
+    ): AuthenticationWebFilter {
+        val filter = AuthenticationWebFilter {
+            it.isAuthenticated = true
+            Mono.just(it)
+        }
+
+        filter.setSecurityContextRepository(securityContextRepository)
+
+        filter.setAuthenticationConverter {
+            ReactiveSecurityContextHolder.getContext()
+                .filter { it.authentication !== null }
+                .map { it.authentication }
+                .switchIfEmpty(userDao().createUser().map { GameAuthentication(it) })
+        }
+
+        filter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, AUTH_URL))
+
+        filter.setAuthenticationSuccessHandler { webFilterExchange, _ ->
+            val exchange = webFilterExchange.exchange
+            exchange.response.statusCode = HttpStatus.OK
+            webFilterExchange.chain.filter(exchange)
+        }
+
+        filter.setAuthenticationFailureHandler(ServerAuthenticationEntryPointFailureHandler(authenticationEntryPoint))
+        return filter
     }
 }

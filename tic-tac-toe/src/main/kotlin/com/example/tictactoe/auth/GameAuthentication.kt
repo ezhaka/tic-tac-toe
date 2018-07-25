@@ -17,7 +17,7 @@ class GameAuthentication(val user: User) : Authentication {
     }
 
     override fun getCredentials(): Any? {
-        return null
+        return user.token
     }
 
     override fun getPrincipal(): Any? {
