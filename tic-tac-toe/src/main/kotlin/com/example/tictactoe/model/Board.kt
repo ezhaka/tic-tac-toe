@@ -9,10 +9,6 @@ const val BOARD_SIZE = 10
  */
 const val K_PARAM = 4
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 27.06.18
- */
 data class Board(
     val id: Int,
     val moves: List<Move> = emptyList(),

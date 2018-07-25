@@ -5,10 +5,6 @@ import com.example.tictactoe.model.Winner
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.MessageType
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 11.07.18
- */
 class PlayerWonMessage(
     val boardId: Int,
     val move: Move,

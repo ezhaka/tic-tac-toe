@@ -18,10 +18,6 @@ import java.util.UUID
 
 const val AUTH_URL = "/api/auth"
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 23.06.18
- */
 @EnableWebFluxSecurity
 class SecurityConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)

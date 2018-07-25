@@ -17,10 +17,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.security.Principal
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 30.06.18
- */
 @RestController
 @RequestMapping("/api/boards")
 class BoardController(val boardProvider: BoardProvider, val userDao: UserDao, val messageBus: MessageBus) {

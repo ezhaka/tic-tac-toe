@@ -9,10 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 const val TEXT_HTML = "text/html"
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 24.06.18
- */
 @Controller
 @RequestMapping("/")
 class MainController {

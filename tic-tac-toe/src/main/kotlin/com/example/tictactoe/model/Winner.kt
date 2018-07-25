@@ -2,10 +2,6 @@ package com.example.tictactoe.model
 
 import kotlin.ranges.IntProgression.Companion.fromClosedRange
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 09.07.18
- */
 data class Winner(
     val userId: String,
     val ranges: List<CoordinateRange>

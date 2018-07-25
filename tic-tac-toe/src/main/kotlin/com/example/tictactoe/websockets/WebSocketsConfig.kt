@@ -7,10 +7,6 @@ import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 26.06.18
- */
 @Configuration
 class WebSocketsConfig(val gameWebSocketHandler: GameWebSocketHandler) {
     @Bean

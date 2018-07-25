@@ -16,10 +16,6 @@ import java.security.Principal
 import java.util.function.BiFunction
 import javax.naming.AuthenticationException
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 26.06.18
- */
 @Component
 class GameWebSocketHandler(
     val objectMapper: ObjectMapper,

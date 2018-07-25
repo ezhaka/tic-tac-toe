@@ -9,10 +9,6 @@ import reactor.core.publisher.Mono
 import java.security.Principal
 import javax.naming.AuthenticationException
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 05.07.18
- */
 @RestController
 @RequestMapping("/api/auth")
 class AuthController {

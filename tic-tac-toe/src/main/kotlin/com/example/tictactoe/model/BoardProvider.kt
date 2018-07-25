@@ -7,10 +7,6 @@ import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 27.06.18
- */
 @Component
 class BoardProvider {
     private val lastAssignedId: AtomicInteger = AtomicInteger()

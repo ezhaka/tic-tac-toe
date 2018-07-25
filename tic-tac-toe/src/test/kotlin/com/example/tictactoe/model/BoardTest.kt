@@ -6,10 +6,6 @@ import org.junit.Test
 const val FIRST_USER_ID = "first"
 const val SECOND_USER_ID = "second"
 
-/**
- * @author Anton Sukhonosenko [](mailto:algebraic@yandex-team.ru)
- * @date 10.07.18
- */
 internal class BoardTest {
     @Test
     fun `first player wins`() {

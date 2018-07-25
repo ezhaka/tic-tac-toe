@@ -17,10 +17,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.UnicastProcessor
 
-/**
- * @author Anton Sukhonosenko <a href="mailto:algebraic@yandex-team.ru"></a>
- * @date 08.07.18
- */
 @Component
 class MessageBus(val boardProvider: BoardProvider) {
     private val log = LoggerFactory.getLogger(this.javaClass)
