@@ -9,11 +9,14 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.web.server.ServerAuthenticationEntryPoint
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
+import org.springframework.security.web.server.authentication.ServerAuthenticationEntryPointFailureHandler
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
 import org.springframework.security.web.server.util.matcher.AndServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
 import reactor.core.publisher.Mono
+import reactor.core.publisher.toMono
 import java.util.UUID
 
 const val AUTH_URL = "/api/auth"
@@ -35,7 +38,8 @@ class SecurityConfiguration {
                 .filter { it.authentication !== null }
                 .map { it.authentication }
                 .switchIfEmpty(
-                    Mono.just(GameAuthentication(User(UUID.randomUUID().toString(), generateUserName(), "")))
+                    GameAuthentication(User(UUID.randomUUID().toString(), generateUserName(), ""))
+                        .toMono()
                         .doOnNext { log.info("New user generated: ${it.user}") } // TODO: remove
                 )
         }
@@ -62,6 +66,14 @@ class SecurityConfiguration {
             webFilterExchange.chain.filter(exchange)
         }
 
+        val authenticationEntryPoint = ServerAuthenticationEntryPoint { exchange, _ ->
+            Mono.fromRunnable {
+                exchange.response.statusCode = HttpStatus.UNAUTHORIZED
+            }
+        }
+
+        filter.setAuthenticationFailureHandler(ServerAuthenticationEntryPointFailureHandler(authenticationEntryPoint))
+
         return http
             .authorizeExchange()
             .pathMatchers(
@@ -74,8 +86,11 @@ class SecurityConfiguration {
                 "/manifest.json"
             )
             .permitAll()
-            .anyExchange()
-            .authenticated()
+            .anyExchange().authenticated()
+            .and()
+            .httpBasic().disable()
+            .formLogin().disable()
+            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
             .and()
             .csrf().disable() // TODO: а может не надо? (вырубил, потому что не работает ajax POST)
             .addFilterAt(filter, SecurityWebFiltersOrder.AUTHENTICATION)

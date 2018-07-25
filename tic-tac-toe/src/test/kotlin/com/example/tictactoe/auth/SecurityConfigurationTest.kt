@@ -41,6 +41,8 @@ class SecurityConfigurationTest {
             .exchange()
             .expectStatus()
             .isUnauthorized
+            .expectHeader()
+            .doesNotExist("Www-Authenticate")
     }
 
     @Test
