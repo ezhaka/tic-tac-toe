@@ -8,21 +8,21 @@ import com.example.tictactoe.model.PlayerIconType
 import com.example.tictactoe.model.Winner
 import java.time.Instant
 
-class UserDto(
+data class UserDto(
     val id: String,
     val name: String
 ) {
     constructor(user: User) : this(user.id, user.name)
 }
 
-class PlayerDto(
+data class PlayerDto(
     val user: UserDto,
     val iconType: PlayerIconType
 ) {
     constructor(player: Player, user: User) : this(UserDto(user), player.iconType)
 }
 
-class BoardDto(
+data class BoardDto(
     val id: Int,
     val moves: List<Move>,
     val players: List<PlayerDto>,
