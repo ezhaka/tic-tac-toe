@@ -27,14 +27,14 @@ class MessageBus(val boardProvider: BoardProvider) {
     private val outgoingMessagesProcessor = UnicastProcessor.create<Message>()
     private val outgoingMessagesSink = outgoingMessagesProcessor.sink()
 
-    // TODO: OutgoingMessage?
     final val outgoingMessages = Flux.merge(
         outgoingMessagesProcessor,
         incomingMessagesProcessor
             .doOnNext { log.info("Received message $it") }
             .groupBy { it.message.boardId }
-            .flatMap {
-                it.concatMap(this::processIncomingMessageSafely)
+            .flatMap { boardMessages ->
+                boardMessages.concatMap(this::processIncomingMessageSafely)
+                    .takeUntil { it is PlayerWonMessage }
             }
     )
         .publish()
