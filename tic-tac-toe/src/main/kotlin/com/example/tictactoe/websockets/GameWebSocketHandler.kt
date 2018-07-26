@@ -1,9 +1,9 @@
 package com.example.tictactoe.websockets
 
 import com.example.tictactoe.auth.GameAuthentication
-import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
+import com.example.tictactoe.websockets.messages.toJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -49,7 +49,7 @@ class GameWebSocketHandler(
         val output = session.send(
             messageBus.outgoingMessages
                 .doOnNext { println("processed $it") }
-                .map { session.textMessage(toJson(it)) }
+                .map { session.textMessage(it.toJson()) }
         ).then()
 
         return Mono.first(input, output)
@@ -57,9 +57,5 @@ class GameWebSocketHandler(
 
     private fun fromJson(s: String): IncomingBoardMessage {
         return objectMapper.readValue(s, IncomingBoardMessage::class.java)
-    }
-
-    private fun toJson(m: Message): String {
-        return objectMapper.writeValueAsString(m)
     }
 }

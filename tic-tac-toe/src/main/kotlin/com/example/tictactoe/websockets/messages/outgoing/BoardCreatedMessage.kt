@@ -4,4 +4,7 @@ import com.example.tictactoe.controllers.BoardDto
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.MessageType
 
-class BoardCreatedMessage(val board: BoardDto) : Message(MessageType.BOARD_CREATED)
+data class BoardCreatedMessage(val board: BoardDto) : Message {
+    override val type: MessageType
+        get() = MessageType.BOARD_CREATED
+}

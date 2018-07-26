@@ -4,7 +4,10 @@ import com.example.tictactoe.controllers.PlayerDto
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.MessageType
 
-class PlayerJoinedMessage(
+data class PlayerJoinedMessage(
     val boardId: Int,
     val player: PlayerDto
-) : Message(MessageType.PLAYER_JOINED)
+) : Message {
+    override val type: MessageType
+        get() = MessageType.PLAYER_JOINED
+}

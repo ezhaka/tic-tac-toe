@@ -5,8 +5,11 @@ import com.example.tictactoe.model.Winner
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.MessageType
 
-class PlayerWonMessage(
+data class PlayerWonMessage(
     val boardId: Int,
     val move: Move,
     val winner: Winner
-) : Message(MessageType.PLAYER_WON)
+) : Message {
+    override val type: MessageType
+        get() = MessageType.PLAYER_WON
+}
