@@ -1,0 +1,8 @@
+/*
+hack: Default padding for an icon is 12px, that's way too much.
+Unfortunately there is no way to set this value from the outside
+*/
+.back-anchor span.grommetux-anchor__icon {
+    padding-left: 0;
+    padding-right: 0;
+}

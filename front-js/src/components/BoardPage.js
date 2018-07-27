@@ -10,6 +10,7 @@ import PlayersList from "./PlayersList";
 import Board from "./Board";
 import StatusString from "./StatusString";
 import Header from "./Header";
+import "./BoardPage.css";
 
 class BoardPage extends Component {
   render() {
@@ -23,8 +24,13 @@ class BoardPage extends Component {
     return (
       <div>
         <Header>
-          <Anchor icon={<PreviousIcon />} path="/" primary={false} />
-          <Title>{`Board #${boardId}`}</Title>
+          <Anchor
+            className="back-anchor"
+            icon={<PreviousIcon />}
+            path="/"
+            primary={false}
+          />
+          <Title>{`board #${boardId}`}</Title>
         </Header>
         <Box direction="row" pad={{ vertical: "medium" }}>
           <Box pad={{ horizontal: "medium", vertical: "small" }} basis="2/3">
