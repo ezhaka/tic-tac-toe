@@ -3,7 +3,8 @@ import { map, filter, flatMap, skip } from "rxjs/operators";
 import { combineEpics } from "redux-observable";
 import { push } from "connected-react-router";
 import { matchPath } from "react-router-dom";
-import { CREATE_BOARD, enterBoard, leaveBoard } from "./actions";
+import { of } from "rxjs";
+import { CREATE_BOARD, enterBoard, joinBoard, leaveBoard } from "./actions";
 import { observeLocations } from "../../utils/epicUtils";
 
 const matchLocation = path => location =>
@@ -23,11 +24,11 @@ export default combineEpics(
     observeLocations(actions, states).pipe(
       map(matchLocation("/boards/:id")),
       filter(match => match && match.isExact),
-      map(({ params }) => enterBoard(params.id))
+      flatMap(({ params }) => of(enterBoard(params.id), joinBoard(params.id)))
     ),
   (actions, states) =>
     observeLocations(actions, states).pipe(
-      skip(1),
+      skip(1), // we do not want LEAVE_BOARD to be dispatched on initialization
       map(matchLocation("/")),
       filter(match => match && match.isExact),
       map(() => leaveBoard())

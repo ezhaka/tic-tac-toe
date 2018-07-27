@@ -11,7 +11,7 @@ import Table from "grommet/components/Table";
 import TableRow from "grommet/components/TableRow";
 import Title from "grommet/components/Title";
 import selectors from "../store/boards/selectors";
-import { createBoard, joinBoard } from "../store/boards/actions";
+import { createBoard } from "../store/boards/actions";
 import Header from "./Header";
 
 class BoardListItem extends Component {
@@ -45,7 +45,6 @@ class BoardList extends Component {
 
   handleBoardClick = boardId => {
     this.props.push(`/boards/${boardId}`);
-    this.props.joinBoard(boardId);
   };
 
   render() {
@@ -86,7 +85,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators({ createBoard, push, joinBoard }, dispatch)
+  ...bindActionCreators({ createBoard, push }, dispatch)
 });
 
 export default connect(

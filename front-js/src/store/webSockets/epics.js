@@ -7,7 +7,8 @@ import {
   INITIALIZE,
   INITIALIZATION_FAILED,
   WEB_SOCKET_CONNECTION_CLOSED,
-  WEB_SOCKET_CONNECTION_OPENED
+  WEB_SOCKET_CONNECTION_OPENED,
+  INITIALIZATION_SUCCESSFUL
 } from "./actions";
 import { boardListLoaded } from "../boards/actions";
 import { authenticated } from "../authentication/actions";
@@ -29,10 +30,11 @@ function loadBoards() {
 export default combineEpics(
   actions =>
     actions.pipe(
-      filter(action => action.type === INITIALIZE),
+      filter(({ type }) => type === INITIALIZE),
       flatMap(() =>
         concat(authenticate(), of(openWebSocketConnection())).pipe(
           catchError(error => {
+            // eslint-disable-next-line no-console
             console.error("Initialization error", error);
             return of({ type: INITIALIZATION_FAILED });
           })
@@ -41,15 +43,17 @@ export default combineEpics(
     ),
   actions =>
     actions.pipe(
-      filter(action => action.type === WEB_SOCKET_CONNECTION_OPENED),
-      flatMap(() => loadBoards())
+      filter(({ type }) => type === WEB_SOCKET_CONNECTION_OPENED),
+      flatMap(() =>
+        concat(loadBoards(), of({ type: INITIALIZATION_SUCCESSFUL }))
+      )
     ),
   actions =>
     actions.pipe(
       filter(
-        action =>
-          action.type === WEB_SOCKET_CONNECTION_CLOSED ||
-          action.type === INITIALIZATION_FAILED
+        ({ type }) =>
+          type === WEB_SOCKET_CONNECTION_CLOSED ||
+          type === INITIALIZATION_FAILED
       ),
       delay(1000),
       map(() => ({ type: INITIALIZE }))
