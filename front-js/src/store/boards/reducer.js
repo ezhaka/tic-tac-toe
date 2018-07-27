@@ -1,13 +1,19 @@
-import { keyBy } from "lodash";
+import { keyBy, omit } from "lodash";
 import {
   BOARD_CREATED,
   BOARD_LIST_LOADED,
   MOVE_MADE,
   PLAYER_JOINED,
-  PLAYER_WON
+  PLAYER_WON,
+  ENTER_BOARD,
+  LEAVE_BOARD
 } from "./actions";
 
-const initialState = { entities: {}, isInitialized: false, pendingActions: [] };
+const initialState = {
+  entities: {},
+  isInitialized: false,
+  pendingActions: []
+};
 
 function applyAction(state, action) {
   const updateBoard = (boardId, mapper) => {
@@ -34,6 +40,11 @@ function applyAction(state, action) {
 
     case PLAYER_WON: {
       const { boardId, move, winner } = action;
+
+      if (state.currentBoardId !== boardId) {
+        return { ...state, entities: omit(state.entities, boardId) };
+      }
+
       return updateBoard(boardId, board => ({
         ...board,
         moves: [...board.moves, move],
@@ -69,11 +80,26 @@ export default function(state = initialState, action) {
     }
 
     case BOARD_LIST_LOADED: {
+      const { pendingActions, currentBoardId } = state;
       const entities = keyBy(action.boards, board => board.id);
       return {
-        ...state.pendingActions.reduce(applyAction, { entities }),
+        ...pendingActions.reduce(applyAction, { entities, currentBoardId }),
         isInitialized: true,
         pendingActions: []
+      };
+    }
+
+    case ENTER_BOARD:
+      return { ...state, currentBoardId: action.boardId };
+
+    case LEAVE_BOARD: {
+      const { entities, currentBoardId } = state;
+      const board = entities[currentBoardId];
+
+      return {
+        ...state,
+        currentBoardId: undefined,
+        entities: board.winner ? omit(entities, currentBoardId) : entities
       };
     }
 

@@ -8,6 +8,9 @@ export const MOVE_MADE = "MOVE_MADE";
 export const PLAYER_WON = "PLAYER_WON";
 export const BOARD_LIST_LOADED = "BOARD_LIST_LOADED";
 
+export const ENTER_BOARD = "ENTER_BOARD";
+export const LEAVE_BOARD = "LEAVE_BOARD";
+
 export const makeMove = (boardId, coordinates) => ({
   type: SEND_WEB_SOCKET_MESSAGE,
   payload: { type: "MAKE_MOVE", boardId, coordinates }
@@ -42,3 +45,7 @@ export const playerWonMessage = (boardId, move, winner) => ({
 });
 
 export const boardListLoaded = boards => ({ type: BOARD_LIST_LOADED, boards });
+
+export const enterBoard = boardId => ({ type: ENTER_BOARD, boardId });
+
+export const leaveBoard = () => ({ type: LEAVE_BOARD });

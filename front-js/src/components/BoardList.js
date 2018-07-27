@@ -82,7 +82,7 @@ class BoardList extends Component {
 }
 
 const mapStateToProps = state => ({
-  boards: selectors.getAllBoards(state)
+  boards: selectors.getActiveBoards(state)
 });
 
 const mapDispatchToProps = dispatch => ({

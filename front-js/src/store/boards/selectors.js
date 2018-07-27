@@ -1,4 +1,4 @@
-import { values, last, find } from "lodash";
+import { sortBy, values, last, find } from "lodash";
 import { fromRoot } from "../../utils/globalizeSelectors";
 import authSelectors from "../authentication/selectors";
 
@@ -7,6 +7,9 @@ const globalize = fromRoot("boards");
 export default {
   getBoardById: globalize((state, boardId) => state.entities[boardId]),
   getAllBoards: globalize(state => values(state.entities)),
+  getActiveBoards: globalize(state =>
+    sortBy(values(state.entities).filter(b => !b.winner), b => -b.id)
+  ),
   isActivePlayer(state, boardId) {
     const currentUser = authSelectors.getCurrentUser(state);
     const board = this.getBoardById(state, boardId);

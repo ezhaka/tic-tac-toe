@@ -1,17 +1,35 @@
 import { ajax } from "rxjs/ajax";
-import { of } from "rxjs";
-import { map, filter, flatMap } from "rxjs/operators";
+import { map, filter, flatMap, skip } from "rxjs/operators";
 import { combineEpics } from "redux-observable";
 import { push } from "connected-react-router";
-import { CREATE_BOARD } from "./actions";
+import { matchPath } from "react-router-dom";
+import { CREATE_BOARD, enterBoard, leaveBoard } from "./actions";
+import { observeLocations } from "../../utils/epicUtils";
 
-export default combineEpics(actions =>
-  actions.pipe(
-    filter(action => action.type === CREATE_BOARD),
-    flatMap(() =>
-      ajax.post(`/api/boards`, {}, { "Content-Type": "application/json" })
+const matchLocation = path => location =>
+  matchPath(location.pathname, { path });
+
+export default combineEpics(
+  actions =>
+    actions.pipe(
+      filter(({ type }) => type === CREATE_BOARD),
+      flatMap(() =>
+        ajax.post(`/api/boards`, {}, { "Content-Type": "application/json" })
+      ),
+      map(r => r.response),
+      map(board => push(`/boards/${board.id}`))
     ),
-    map(r => r.response),
-    flatMap(board => of(push(`/boards/${board.id}`))) // TODO: возможно, нужен более специфичный экшн
-  )
+  (actions, states) =>
+    observeLocations(actions, states).pipe(
+      map(matchLocation("/boards/:id")),
+      filter(match => match && match.isExact),
+      map(({ params }) => enterBoard(params.id))
+    ),
+  (actions, states) =>
+    observeLocations(actions, states).pipe(
+      skip(1),
+      map(matchLocation("/")),
+      filter(match => match && match.isExact),
+      map(() => leaveBoard())
+    )
 );
