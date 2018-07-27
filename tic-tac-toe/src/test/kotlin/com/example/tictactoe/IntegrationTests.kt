@@ -11,18 +11,18 @@ import com.example.tictactoe.model.Winner
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.incoming.JoinBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.MakeMoveMessage
-import com.example.tictactoe.websockets.messages.messageFromJson
 import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
 import com.example.tictactoe.websockets.messages.outgoing.MoveMadeMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerJoinedMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
-import com.example.tictactoe.websockets.messages.toJson
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.Timeout
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
@@ -43,6 +43,9 @@ import java.util.regex.Pattern
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class IntegrationTests {
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @LocalServerPort
     private val port: String? = null
@@ -65,7 +68,7 @@ class IntegrationTests {
         )
 
         client.openWebSocketConnection { session ->
-            val outgoing = session.send(outgoingMessages.map { it.toJson() }.map(session::textMessage))
+            val outgoing = session.send(outgoingMessages.map { messageToJson(it) }.map(session::textMessage))
 
             val incoming = expectedMessages
                 .zipWith(session.receive().map(this::parseSocketMessage))
@@ -104,7 +107,7 @@ class IntegrationTests {
                 val outgoingMessage = secondSession.send(
                     JoinBoardMessage(board.id)
                         .toMono()
-                        .map { it.toJson() }
+                        .map { messageToJson(it) }
                         .map(secondSession::textMessage)
                 )
 
@@ -155,7 +158,7 @@ class IntegrationTests {
                     s.send(
                         moves
                             .filter { (session, _) -> session == s }
-                            .map { (_, message) -> message.toJson() }
+                            .map { (_, message) -> messageToJson(message) }
                             .map(s::textMessage)
                     )
                 }
@@ -261,4 +264,8 @@ class IntegrationTests {
     }
 
     private fun getHttpUrl() = "http://localhost:$port"
+
+    private fun messageToJson(message: Message) = objectMapper.writeValueAsString(message)
+
+    private fun messageFromJson(s: String) = objectMapper.readValue(s, Message::class.java)
 }

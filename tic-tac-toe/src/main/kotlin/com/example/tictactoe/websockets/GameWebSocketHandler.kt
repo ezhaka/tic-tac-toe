@@ -1,9 +1,9 @@
 package com.example.tictactoe.websockets
 
 import com.example.tictactoe.auth.GameAuthentication
+import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
-import com.example.tictactoe.websockets.messages.toJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -30,7 +30,7 @@ class GameWebSocketHandler(
             session.handshakeInfo.principal,
             BiFunction<WebSocketMessage, Principal, IncomingMessageWrapper<IncomingBoardMessage>> { message, principal ->
                 when (principal) {
-                    is GameAuthentication -> IncomingMessageWrapper(fromJson(message.payloadAsText), principal.user)
+                    is GameAuthentication -> IncomingMessageWrapper(messageFromJson(message.payloadAsText), principal.user)
                     else -> throw AuthenticationException("Authentication is not found or has invalid type: $principal")
                 }
             }
@@ -38,24 +38,18 @@ class GameWebSocketHandler(
             .doOnNext {
                 messageBus.onIncomingMessage(it)
             }
-//            .doOnComplete {
-//                processIncomingMessage(PlayerDisconnectedMessage(session.id))
-//            }
-//            .doOnError {
-//                processIncomingMessage(PlayerDisconnectedMessage(session.id))
-//            }
             .then()
 
         val output = session.send(
             messageBus.outgoingMessages
                 .doOnNext { println("processed $it") }
-                .map { session.textMessage(it.toJson()) }
+                .map { session.textMessage(messageToJson(it)) }
         ).then()
 
         return Mono.first(input, output)
     }
 
-    private fun fromJson(s: String): IncomingBoardMessage {
-        return objectMapper.readValue(s, IncomingBoardMessage::class.java)
-    }
+    private fun messageToJson(message: Message) = objectMapper.writeValueAsString(message)
+
+    private fun messageFromJson(s: String) = objectMapper.readValue(s, IncomingBoardMessage::class.java)
 }

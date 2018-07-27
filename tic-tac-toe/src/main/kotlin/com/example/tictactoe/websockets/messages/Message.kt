@@ -9,7 +9,6 @@ import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.ObjectMapper
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes(
@@ -24,11 +23,3 @@ import com.fasterxml.jackson.databind.ObjectMapper
 interface Message {
     val type: MessageType
 }
-
-val mapper = ObjectMapper().findAndRegisterModules()
-
-fun Message.toJson(): String {
-    return mapper.writeValueAsString(this)
-}
-
-fun messageFromJson(value: String) = mapper.readValue(value, Message::class.java)
