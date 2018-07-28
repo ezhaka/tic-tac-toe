@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import Emoji from "./Emoji/Emoji";
 import authSelectors from "../store/authentication/selectors";
-import "./Player.css";
+import "./Player.scss";
 
 function Player({ player, isCurrentUser }) {
   // TODO: do not hardcode icon size

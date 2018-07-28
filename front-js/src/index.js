@@ -7,7 +7,7 @@ import App from "./components/App";
 import registerServiceWorker from "./registerServiceWorker";
 import configureStore from "./store/configureStore";
 import { INITIALIZE } from "./store/webSockets/actions";
-import "./index.css";
+import "./index.scss";
 
 const history = createBrowserHistory();
 const store = configureStore(history);

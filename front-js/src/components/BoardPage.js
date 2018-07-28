@@ -11,14 +11,14 @@ import PlayersList from "./PlayersList";
 import Board from "./Board";
 import StatusString from "./StatusString";
 import Header from "./Header";
-import "./BoardPage.css";
+import "./BoardPage.scss";
 
 class BoardPage extends Component {
   render() {
     const { boardId, isLoading } = this.props;
 
     return (
-      <Box flex="grow">
+      <Box className="board-page" flex="grow">
         <Header>
           <Anchor
             className="back-anchor"

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { range, zip, get, find, times } from "lodash";
-import "./Board.css";
+import "./Board.scss";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import BoardCell, { ACTIVE_CELL, LOSER_CELL, WINNER_CELL } from "./BoardCell";
@@ -13,7 +13,7 @@ class Board extends Component {
   };
 
   render() {
-    const { occupiedCells, winnerCells } = this.props;
+    const { boardId, occupiedCells, winnerCells } = this.props;
 
     function getCellState(row, column) {
       if (!winnerCells) {
@@ -31,6 +31,7 @@ class Board extends Component {
               {range(10).map(column => (
                 <BoardCell
                   key={column}
+                  boardId={boardId}
                   onClick={this.handleCellClick}
                   coordinates={{ row, column }}
                   iconType={get(occupiedCells, [row, column, "iconType"])}

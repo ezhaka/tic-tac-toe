@@ -5,7 +5,6 @@ import {
 
 export default function(state = {}, action) {
   switch (action.type) {
-    // TODO: как выйти из этого состояния?
     case WEB_SOCKET_CONNECTION_CLOSED:
       return { connectionState: "CLOSED" };
     case WEB_SOCKET_CONNECTION_OPENED:

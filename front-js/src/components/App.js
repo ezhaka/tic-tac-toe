@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Route, Switch, withRouter } from "react-router-dom";
-import "./App.css";
 import "grommet/scss/vanilla/index.scss";
 import GrommetApp from "grommet/components/App";
 import Box from "grommet/components/Box";

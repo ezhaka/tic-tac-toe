@@ -1,21 +1,33 @@
 import React, { Component } from "react";
+import classNames from "classnames";
+import { connect } from "react-redux";
 import Emoji from "./Emoji/Emoji";
+import "./BoardCell.scss";
+import selectors from "../store/boards/selectors";
 
 export const ACTIVE_CELL = "ACTIVE_CELL";
 export const WINNER_CELL = "WINNER_CELL";
 export const LOSER_CELL = "LOSER_CELL";
 
-export default class BoardCell extends Component {
+class BoardCell extends Component {
   handleClick = () => {
-    const { onClick, coordinates } = this.props;
+    const { clickable, onClick, coordinates } = this.props;
+
+    if (!clickable) {
+      return;
+    }
+
     onClick(coordinates);
   };
 
   render() {
-    const { coordinates, iconType, cellState } = this.props;
-    const className = `board-cell ${cellState
-      .replace("_CELL", "")
-      .toLowerCase()}`;
+    const { coordinates, iconType, cellState, clickable } = this.props;
+
+    const className = classNames(
+      "board-cell",
+      cellState.replace("_CELL", "").toLowerCase(),
+      { clickable }
+    );
 
     return (
       <td
@@ -32,3 +44,9 @@ export default class BoardCell extends Component {
     );
   }
 }
+
+const mapStateToProps = (state, { boardId, iconType }) => ({
+  clickable: !iconType && selectors.isActivePlayer(state, boardId)
+});
+
+export default connect(mapStateToProps)(BoardCell);
