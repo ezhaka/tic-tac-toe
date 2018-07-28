@@ -5,12 +5,12 @@ import selectors from "../store/boards/selectors";
 import Player from "./Player";
 import authSelectors from "../store/authentication/selectors";
 
-function PlayersList({ players }) {
+function PlayersList({ boardId, players }) {
   return (
     <div>
       {players.map(player => (
         <div key={player.user.id}>
-          <Player player={player} />
+          <Player player={player} boardId={boardId} />
         </div>
       ))}
     </div>

@@ -23,11 +23,7 @@ class BoardCell extends Component {
   render() {
     const { coordinates, iconType, cellState, clickable } = this.props;
 
-    const className = classNames(
-      "board-cell",
-      cellState.replace("_CELL", "").toLowerCase(),
-      { clickable }
-    );
+    const className = classNames("board-cell", { clickable });
 
     return (
       <td
@@ -37,7 +33,9 @@ class BoardCell extends Component {
       >
         <div className="board-cell-content">
           <div className="board-icon-container">
-            {iconType && <Emoji type={iconType} />}
+            {iconType && (
+              <Emoji type={iconType} inactive={cellState === LOSER_CELL} />
+            )}
           </div>
         </div>
       </td>
@@ -45,8 +43,12 @@ class BoardCell extends Component {
   }
 }
 
-const mapStateToProps = (state, { boardId, iconType }) => ({
-  clickable: !iconType && selectors.isActivePlayer(state, boardId)
-});
+const mapStateToProps = (state, { boardId, iconType }) => {
+  const wonPlayer = selectors.getWonPlayer(state, boardId);
+  return {
+    clickable:
+      !wonPlayer && !iconType && selectors.isActivePlayer(state, boardId)
+  };
+};
 
 export default connect(mapStateToProps)(BoardCell);

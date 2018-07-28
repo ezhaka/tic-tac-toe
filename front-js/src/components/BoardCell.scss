@@ -2,10 +2,6 @@
   position: relative;
   border: 2px solid lightgrey;
 
-  &.loser {
-    filter: grayscale(100%);
-  }
-
   &.clickable {
     cursor: pointer;
   }

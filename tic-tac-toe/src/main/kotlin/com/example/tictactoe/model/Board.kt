@@ -21,6 +21,7 @@ data class Board(
     fun makeMove(move: Move): Board {
         require(winner == null)
         require(move.coordinates.row in 0..(BOARD_SIZE - 1) && move.coordinates.column in 0..(BOARD_SIZE - 1))
+        require(players.any { it.userId === move.userId })
         val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
 
         require(canMakeMove) { "Tried to make a move ($move) out of order" }

@@ -1,4 +1,6 @@
 import React from "react";
+import classNames from "classnames";
+import "./Emoji.scss";
 import unicorn from "./unicorn.png";
 import hedgehog from "./hedgehog.png";
 import turtle from "./turtle.png";
@@ -37,6 +39,13 @@ function getIcon(type) {
   }
 }
 
-export default function Emoji({ type, size }) {
-  return <img alt="" src={getIcon(type)} width={size} />;
+export default function Emoji({ type, size, inactive }) {
+  return (
+    <img
+      alt=""
+      src={getIcon(type)}
+      style={{ height: size }}
+      className={classNames("emoji-icon", { inactive })}
+    />
+  );
 }

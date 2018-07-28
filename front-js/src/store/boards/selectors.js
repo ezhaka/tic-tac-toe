@@ -21,15 +21,27 @@ export default {
     const lastMove = last(board.moves);
     return !lastMove || lastMove.userId !== currentUser.id;
   },
-  isWinner(state, boardId) {
-    const currentUser = authSelectors.getCurrentUser(state);
+  hasCurrentUserWon(state, boardId) {
+    const user = authSelectors.getCurrentUser(state);
+    return this.isWinner(state, boardId, user.id);
+  },
+  isWinner(state, boardId, userId) {
     const board = this.getBoardById(state, boardId);
 
     if (!board || !board.winner) {
       return false;
     }
 
-    return board.winner.userId === currentUser.id;
+    return board.winner.userId === userId;
+  },
+  isLoser(state, boardId, userId) {
+    const board = this.getBoardById(state, boardId);
+
+    if (!board || !board.winner) {
+      return false;
+    }
+
+    return !this.isWinner(state, boardId, userId);
   },
   getWonPlayer(state, boardId) {
     const board = this.getBoardById(state, boardId);

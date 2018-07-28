@@ -4,7 +4,7 @@ import Label from "grommet/components/Label";
 import selectors from "../store/boards/selectors";
 import Player from "./Player";
 
-const StatusString = ({ wonPlayer, isWinner, isActivePlayer }) => {
+const StatusString = ({ boardId, wonPlayer, isWinner, isActivePlayer }) => {
   let status = null;
 
   if (wonPlayer) {
@@ -12,7 +12,7 @@ const StatusString = ({ wonPlayer, isWinner, isActivePlayer }) => {
       <span>Congrats! You are the winner</span>
     ) : (
       <span>
-        Sorry, <Player player={wonPlayer} /> won
+        Sorry, <Player player={wonPlayer} boardId={boardId} /> won
       </span>
     );
   } else {
@@ -28,7 +28,7 @@ const StatusString = ({ wonPlayer, isWinner, isActivePlayer }) => {
 
 const mapStateToProps = (state, { boardId }) => ({
   isActivePlayer: selectors.isActivePlayer(state, boardId),
-  isWinner: selectors.isWinner(state, boardId),
+  isWinner: selectors.hasCurrentUserWon(state, boardId),
   wonPlayer: selectors.getWonPlayer(state, boardId)
 });
 
