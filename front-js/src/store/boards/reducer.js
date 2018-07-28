@@ -6,7 +6,8 @@ import {
   PLAYER_JOINED,
   PLAYER_WON,
   ENTER_BOARD,
-  LEAVE_BOARD
+  LEAVE_BOARD,
+  FINISHED_BOARD_LOADED
 } from "./actions";
 
 const initialState = {
@@ -53,6 +54,7 @@ function applyAction(state, action) {
     }
 
     case BOARD_CREATED:
+    case FINISHED_BOARD_LOADED:
       return updateBoard(action.board.id, () => action.board);
 
     default:
@@ -65,7 +67,8 @@ export default function(state = initialState, action) {
     case PLAYER_JOINED:
     case MOVE_MADE:
     case PLAYER_WON:
-    case BOARD_CREATED: {
+    case BOARD_CREATED:
+    case FINISHED_BOARD_LOADED: {
       if (!state.isInitialized && action.type !== BOARD_LIST_LOADED) {
         return {
           ...state,

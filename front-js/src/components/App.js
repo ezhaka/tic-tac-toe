@@ -10,13 +10,15 @@ import BoardList from "./BoardList";
 class App extends Component {
   render() {
     return (
-      <GrommetApp>
-        <Box align="center">
-          <Box size="xlarge" pad={{ horizontal: "medium" }}>
-            <Switch>
-              <Route exact path="/" component={BoardList} />
-              <Route exact path="/boards/:id" component={BoardPage} />
-            </Switch>
+      <GrommetApp centered={false}>
+        <Box full>
+          <Box align="center" flex="grow">
+            <Box pad={{ horizontal: "medium" }} size="xlarge" flex="grow">
+              <Switch>
+                <Route exact path="/" component={BoardList} />
+                <Route exact path="/boards/:id" component={BoardPage} />
+              </Switch>
+            </Box>
           </Box>
         </Box>
       </GrommetApp>
