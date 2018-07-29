@@ -19,12 +19,23 @@ const initialState = {
 function applyAction(state, action) {
   const updateBoard = (boardId, mapper) => {
     const board = state.entities[boardId]; // TODO: это не круто, лучше разбить на разные редьюсеры
-    return { entities: { ...state.entities, [boardId]: mapper(board) } };
+    return {
+      ...state,
+      entities: { ...state.entities, [boardId]: mapper(board) }
+    };
   };
+
+  if (action.boardVersion) {
+    const board = state.entities[action.boardId];
+    if (board && board.version >= action.boardVersion) {
+      return state;
+    }
+  }
 
   switch (action.type) {
     case PLAYER_JOINED: {
       const { boardId, player } = action;
+
       return updateBoard(boardId, board => ({
         ...board,
         players: [...board.players, player]
@@ -33,6 +44,7 @@ function applyAction(state, action) {
 
     case MOVE_MADE: {
       const { boardId, move } = action;
+
       return updateBoard(boardId, board => ({
         ...board,
         moves: [...board.moves, move]
@@ -69,7 +81,7 @@ export default function(state = initialState, action) {
     case PLAYER_WON:
     case BOARD_CREATED:
     case FINISHED_BOARD_LOADED: {
-      if (!state.isInitialized && action.type !== BOARD_LIST_LOADED) {
+      if (!state.isInitialized) {
         return {
           ...state,
           pendingActions: [...state.pendingActions, action]
@@ -85,6 +97,7 @@ export default function(state = initialState, action) {
     case BOARD_LIST_LOADED: {
       const { pendingActions, currentBoardId } = state;
       const entities = keyBy(action.boards, board => board.id);
+
       return {
         ...pendingActions.reduce(applyAction, { entities, currentBoardId }),
         isInitialized: true,

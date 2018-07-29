@@ -20,8 +20,10 @@ internal class BoardTest {
             .makeMove(SECOND_USER_ID, 2, 1)
             .makeMove(FIRST_USER_ID, 3, 0)
 
+        Assert.assertEquals(9, finishedBoard.version)
         Assert.assertNotNull(finishedBoard.winner)
         Assert.assertEquals(FIRST_USER_ID, finishedBoard.winner?.userId)
+
         Assert.assertEquals(
             listOf(CoordinateRange(Coordinates(0, 0), Coordinates(3, 0))),
             finishedBoard.winner?.ranges
@@ -60,8 +62,8 @@ internal class BoardTest {
             // FINISH HIM!
             .makeMove(FIRST_USER_ID, 3, 3)
 
+        Assert.assertEquals(27, finishedBoard.version)
         Assert.assertNotNull(finishedBoard.winner)
-
         Assert.assertEquals(FIRST_USER_ID, finishedBoard.winner?.userId)
 
         Assert.assertEquals(
@@ -105,8 +107,8 @@ internal class BoardTest {
             // FINISH HIM!
             .makeMove(FIRST_USER_ID, 3, 3)
 
+        Assert.assertEquals(27, finishedBoard.version)
         Assert.assertNotNull(finishedBoard.winner)
-
         Assert.assertEquals(FIRST_USER_ID, finishedBoard.winner?.userId)
 
         Assert.assertEquals(

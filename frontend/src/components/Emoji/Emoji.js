@@ -12,27 +12,40 @@ import whale from "./whale.png";
 import snail from "./snail.png";
 import hatchingChick from "./hatching-chick.png";
 
+export const iconTypes = {
+  UNICORN: "UNICORN",
+  HEDGEHOG: "HEDGEHOG",
+  TURTLE: "TURTLE",
+  DUCK: "DUCK",
+  CACTUS: "CACTUS",
+  BUTTERFLY: "BUTTERFLY",
+  SQUID: "SQUID",
+  WHALE: "WHALE",
+  SNAIL: "SNAIL",
+  HATCHING_CHICK: "HATCHING_CHICK"
+};
+
 function getIcon(type) {
   switch (type) {
-    case "UNICORN":
+    case iconTypes.UNICORN:
       return unicorn;
-    case "HEDGEHOG":
+    case iconTypes.HEDGEHOG:
       return hedgehog;
-    case "TURTLE":
+    case iconTypes.TURTLE:
       return turtle;
-    case "DUCK":
+    case iconTypes.DUCK:
       return duck;
-    case "CACTUS":
+    case iconTypes.CACTUS:
       return cactus;
-    case "BUTTERFLY":
+    case iconTypes.BUTTERFLY:
       return butterfly;
-    case "SQUID":
+    case iconTypes.SQUID:
       return squid;
-    case "WHALE":
+    case iconTypes.WHALE:
       return whale;
-    case "SNAIL":
+    case iconTypes.SNAIL:
       return snail;
-    case "HATCHING_CHICK":
+    case iconTypes.HATCHING_CHICK:
       return hatchingChick;
     default:
       throw new Error(`Unkonwn icon type ${type}`);

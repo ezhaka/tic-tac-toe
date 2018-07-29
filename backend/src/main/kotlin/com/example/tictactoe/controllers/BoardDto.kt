@@ -24,6 +24,7 @@ data class PlayerDto(
 
 data class BoardDto(
     val id: Int,
+    val version: Int,
     val moves: List<Move>,
     val players: List<PlayerDto>,
     val createdDate: Instant,
@@ -35,6 +36,7 @@ fun createBoardDto(board: Board, users: List<User>): BoardDto {
 
     return BoardDto(
         board.id,
+        board.version,
         board.moves,
         board.players.map {
             val user = usersById[it.userId] ?: throw NoSuchElementException("Unable to find user ${it.userId}")

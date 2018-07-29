@@ -11,6 +11,7 @@ const val K_PARAM = 4
 
 data class Board(
     val id: Int,
+    val version: Int = 0,
     val moves: List<Move> = emptyList(),
     val players: Set<Player> = emptySet(),
     val createdDate: Instant = Instant.now(),
@@ -22,16 +23,18 @@ data class Board(
         require(winner == null)
         require(move.coordinates.row in 0..(BOARD_SIZE - 1) && move.coordinates.column in 0..(BOARD_SIZE - 1))
         require(players.any { it.userId === move.userId })
+
         val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
-
         require(canMakeMove) { "Tried to make a move ($move) out of order" }
-        require(!movesMap(moves).containsKey(move.coordinates)) { "Somebody already made a move (${move.coordinates})" }
 
-        return copy(moves = moves + move, winner = WinnerCalculator(movesMap(moves + move), move).get())
-    }
+        val movesMap = buildMovesMap(moves)
+        require(!movesMap.containsKey(move.coordinates)) { "Somebody already made a move (${move.coordinates})" }
 
-    private fun movesMap(moves: List<Move>): Map<Coordinates, Move> {
-        return moves.map { Pair(it.coordinates, it) }.toMap()
+        return copy(
+            version = version + 1,
+            moves = moves + move,
+            winner = WinnerCalculator(movesMap + Pair(move.coordinates, move), move).get()
+        )
     }
 
     fun addPlayer(userId: String): Board {
@@ -47,7 +50,10 @@ data class Board(
         }
 
         val iconType = PlayerIconType.values()[nextPlayerIconOrdinal]
-        return copy(players = players + Player(userId, iconType))
+        return copy(
+            version = version + 1,
+            players = players + Player(userId, iconType)
+        )
     }
 
     fun getPlayer(userId: String) =
@@ -56,4 +62,8 @@ data class Board(
     fun hasPlayer(userId: String) = getPlayerOrNull(userId) != null
 
     private fun getPlayerOrNull(userId: String) = players.firstOrNull { it.userId == userId }
+
+    private fun buildMovesMap(moves: List<Move>): Map<Coordinates, Move> {
+        return moves.map { Pair(it.coordinates, it) }.toMap()
+    }
 }

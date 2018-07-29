@@ -26,9 +26,10 @@ export const createBoard = () => ({ type: CREATE_BOARD });
 
 export const boardCreated = board => ({ type: BOARD_CREATED, board });
 
-export const moveMade = (boardId, userId, row, column) => ({
+export const moveMade = (boardId, userId, row, column, boardVersion) => ({
   type: MOVE_MADE,
   boardId,
+  boardVersion,
   move: {
     userId,
     coordinates: {
@@ -38,9 +39,10 @@ export const moveMade = (boardId, userId, row, column) => ({
   }
 });
 
-export const playerWonMessage = (boardId, move, winner) => ({
+export const playerWonMessage = (boardId, move, winner, boardVersion) => ({
   type: PLAYER_WON,
   boardId,
+  boardVersion,
   move,
   winner
 });
@@ -52,3 +54,10 @@ export const boardListLoaded = boards => ({ type: BOARD_LIST_LOADED, boards });
 export const enterBoard = boardId => ({ type: ENTER_BOARD, boardId });
 
 export const leaveBoard = () => ({ type: LEAVE_BOARD });
+
+export const playerJoined = (boardId, player, boardVersion) => ({
+  type: PLAYER_JOINED,
+  boardId,
+  boardVersion,
+  player
+});

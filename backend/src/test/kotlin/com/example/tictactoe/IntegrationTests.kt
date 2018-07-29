@@ -64,7 +64,7 @@ class IntegrationTests {
         )
 
         val expectedMessages = Flux.just(
-            MoveMadeMessage(board.id, Move(client.user.id, Coordinates(0, 0)))
+            MoveMadeMessage(board.id, Move(client.user.id, Coordinates(0, 0)), boardVersion = 2)
         )
 
         client.openWebSocketConnection { session ->
@@ -115,7 +115,11 @@ class IntegrationTests {
                     .map(this::parseSocketMessage)
                     .doOnNext {
                         val expectedMessage =
-                            PlayerJoinedMessage(board.id, PlayerDto(secondClient.user, PlayerIconType.HEDGEHOG))
+                            PlayerJoinedMessage(
+                                board.id,
+                                PlayerDto(secondClient.user, PlayerIconType.HEDGEHOG),
+                                boardVersion = 2
+                            )
 
                         Assert.assertEquals(expectedMessage, it)
                     }
@@ -182,7 +186,8 @@ class IntegrationTests {
                                             Coordinates(3, 0)
                                         )
                                     )
-                                )
+                                ),
+                                boardVersion = 9
                             )
 
                             assertMessagesAreEqual(expectedMessage, it)
@@ -209,7 +214,7 @@ class IntegrationTests {
         actual: Message
     ) {
         val moveComparator: (Move, Move) -> Int =
-            // TODO: strange place, I need to understand why assertj uses comparators, it's so inconvenient!
+        // TODO: strange place, I need to understand why assertj uses comparators, it's so inconvenient!
             { x, y -> if (x.copy(date = Instant.EPOCH) == y.copy(date = Instant.EPOCH)) 0 else -1 }
 
         assertThat(actual)

@@ -6,7 +6,6 @@ const globalize = fromRoot("boards");
 
 export default {
   getBoardById: globalize((state, boardId) => state.entities[boardId]),
-  getAllBoards: globalize(state => values(state.entities)),
   getActiveBoards: globalize(state =>
     sortBy(values(state.entities).filter(b => !b.winner), b => -b.id)
   ),

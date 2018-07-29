@@ -2,53 +2,22 @@ import { mapStateToProps } from "./Board";
 import configureStore from "../store/configureStore";
 import {
   boardCreated,
-  boardListLoaded,
+  boardListLoaded, enterBoard,
   moveMade as moveMadeAction,
   playerWonMessage
 } from "../store/boards/actions";
-import { curry } from "lodash";
+import { partial } from "lodash";
+import { coordinateRange, twoPlayerBoard } from "../store/boards/test/testData";
 
 const boardId = 1;
 
-const twoPlayerBoard = {
-  id: boardId,
-  moves: [],
-  players: [
-    {
-      user: {
-        id: 1,
-        name: "user one"
-      },
-      iconType: "UNICORN"
-    },
-    {
-      user: {
-        id: 2,
-        name: "user two"
-      },
-      iconType: "HEDGEHOG"
-    }
-  ]
-};
-
-const moveMade = curry(moveMadeAction)(boardId);
-
-const coordinateRange = ([fromRow, fromColumn], [toRow, toColumn]) => ({
-  from: {
-    row: fromRow,
-    column: fromColumn
-  },
-  to: {
-    row: toRow,
-    column: toColumn
-  }
-});
+const moveMade = partial(moveMadeAction, boardId);
 
 it("unfinished board", () => {
   // arrange
   const store = configureStore();
   store.dispatch(boardListLoaded([]));
-  store.dispatch(boardCreated(twoPlayerBoard));
+  store.dispatch(boardCreated(twoPlayerBoard(boardId)));
   store.dispatch(moveMade(1, 0, 0));
   store.dispatch(moveMade(2, 0, 1));
   store.dispatch(moveMade(1, 1, 0));
@@ -72,7 +41,8 @@ it("X winner", () => {
   // arrange
   const store = configureStore();
   store.dispatch(boardListLoaded([]));
-  store.dispatch(boardCreated(twoPlayerBoard));
+  store.dispatch(boardCreated(twoPlayerBoard(boardId)));
+  store.dispatch(enterBoard(boardId));
   store.dispatch(moveMade(1, 0, 0));
   store.dispatch(moveMade(2, 7, 0));
   store.dispatch(moveMade(1, 1, 1));
@@ -137,7 +107,8 @@ it("+ winner", () => {
   // arrange
   const store = configureStore();
   store.dispatch(boardListLoaded([]));
-  store.dispatch(boardCreated(twoPlayerBoard));
+  store.dispatch(boardCreated(twoPlayerBoard(boardId)));
+  store.dispatch(enterBoard(boardId));
   store.dispatch(moveMade(1, 0, 3));
   store.dispatch(moveMade(2, 7, 0));
   store.dispatch(moveMade(1, 1, 3));

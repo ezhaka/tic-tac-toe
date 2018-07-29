@@ -16,10 +16,6 @@ class BoardProvider {
         return Mono.justOrEmpty(map[boardId])
     }
 
-    fun getByIdOrDefault(boardId: Int): Mono<Board> {
-        return getById(boardId).defaultIfEmpty(Board(boardId, emptyList(), emptySet()))
-    }
-
     fun save(board: Board): Mono<Board> {
         map[board.id] = board
         return Mono.just(board)
