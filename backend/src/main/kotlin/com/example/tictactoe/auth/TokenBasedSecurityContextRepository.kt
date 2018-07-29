@@ -8,7 +8,7 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import java.time.Duration
 
-class TokenBasedSecurityContextRepository(private val userDao: UserDao) : ServerSecurityContextRepository {
+class TokenBasedSecurityContextRepository(private val userService: UserService) : ServerSecurityContextRepository {
     override fun save(exchange: ServerWebExchange, context: SecurityContext): Mono<Void> {
         return Mono.fromRunnable {
             val token = context.authentication.credentials as String
@@ -26,7 +26,7 @@ class TokenBasedSecurityContextRepository(private val userDao: UserDao) : Server
     override fun load(exchange: ServerWebExchange): Mono<SecurityContext> {
         val token = exchange.request.cookies[TOKEN_COOKIE_KEY]?.firstOrNull()?.value ?: return Mono.empty()
 
-        return userDao.getUserByToken(token)
+        return userService.getUserByToken(token)
             .map { SecurityContextImpl(GameAuthentication(it)) }
     }
 }

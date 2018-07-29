@@ -20,12 +20,12 @@ const val AUTH_URL = "/api/auth"
 const val TOKEN_COOKIE_KEY = "Token"
 
 @EnableWebFluxSecurity
-class SecurityConfiguration {
+class SecurityConfiguration(private val userService: UserService) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Bean
     fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
-        val securityContextRepository = TokenBasedSecurityContextRepository(userDao())
+        val securityContextRepository = TokenBasedSecurityContextRepository(userService)
 
         val authenticationEntryPoint = ServerAuthenticationEntryPoint { exchange, _ ->
             Mono.fromRunnable {
@@ -59,11 +59,6 @@ class SecurityConfiguration {
             .build()
     }
 
-    @Bean
-    fun userDao(): UserDao {
-        return UserDao()
-    }
-
     private fun authenticationWebFilter(
         securityContextRepository: ServerSecurityContextRepository,
         authenticationEntryPoint: ServerAuthenticationEntryPoint
@@ -79,7 +74,7 @@ class SecurityConfiguration {
             ReactiveSecurityContextHolder.getContext()
                 .filter { it.authentication !== null }
                 .map { it.authentication }
-                .switchIfEmpty(userDao().createUser().map { GameAuthentication(it) })
+                .switchIfEmpty(userService.createUser().map { GameAuthentication(it) })
         }
 
         filter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, AUTH_URL))
@@ -91,6 +86,7 @@ class SecurityConfiguration {
         }
 
         filter.setAuthenticationFailureHandler(ServerAuthenticationEntryPointFailureHandler(authenticationEntryPoint))
+
         return filter
     }
 }

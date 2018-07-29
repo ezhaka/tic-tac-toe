@@ -19,7 +19,7 @@ class SecurityConfigurationTest {
     lateinit var context: ApplicationContext
 
     @Autowired
-    lateinit var userDao: UserDao
+    lateinit var userService: UserService
 
     lateinit var rest: WebTestClient
 
@@ -64,7 +64,7 @@ class SecurityConfigurationTest {
 
     @Test
     fun `authenticated access is allowed to api`() {
-        val user = userDao.createUser().block()!!
+        val user = userService.createUser().block()!!
 
         rest.get()
             .uri("/api/boards")

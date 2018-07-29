@@ -57,16 +57,18 @@ idea {
 evaluationDependsOn(':frontend')
 
 dependencies {
-    // TODO: remove or uncomment
-    //	compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-webflux')
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('io.projectreactor:reactor-test')
     testCompile('org.springframework.security:spring-security-test')
+    testCompile("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.0.1")
+    testCompile("cz.jirutka.spring:embedmongo-spring:1.3.1")
 }
 
 task copyWebStatic(type: Copy) {

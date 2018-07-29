@@ -1,7 +1,7 @@
 package com.example.tictactoe.websockets
 
 import com.example.tictactoe.controllers.PlayerDto
-import com.example.tictactoe.model.BoardProvider
+import com.example.tictactoe.model.BoardService
 import com.example.tictactoe.model.Move
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono
 import reactor.core.publisher.UnicastProcessor
 
 @Component
-class MessageBus(val boardProvider: BoardProvider) {
+class MessageBus(val boardService: BoardService) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val incomingMessagesProcessor = UnicastProcessor.create<IncomingMessageWrapper<IncomingBoardMessage>>()
@@ -65,8 +65,8 @@ class MessageBus(val boardProvider: BoardProvider) {
             is MakeMoveMessage -> {
                 val move = Move(user.id, message.coordinates)
 
-                boardProvider.getById(message.boardId)
-                    .flatMap { boardProvider.save(it.makeMove(move)) }
+                boardService.getById(message.boardId)
+                    .flatMap { boardService.save(it.makeMove(move)) }
                     .map {
                         if (it.winner != null) {
                             PlayerWonMessage(message.boardId, move, it.winner, it.version)
@@ -76,12 +76,12 @@ class MessageBus(val boardProvider: BoardProvider) {
                     }
             }
 
-            is JoinBoardMessage -> boardProvider.getById(message.boardId)
+            is JoinBoardMessage -> boardService.getById(message.boardId)
                 .flatMap {
                     if (!it.hasPlayer(user.id)) Mono.just(it.addPlayer(user.id)) else Mono.empty()
                 }
                 .flatMap { board ->
-                    boardProvider.save(board)
+                    boardService.save(board)
                 }
                 .map {
                     PlayerJoinedMessage(

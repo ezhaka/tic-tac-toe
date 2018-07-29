@@ -214,7 +214,6 @@ class IntegrationTests {
         actual: Message
     ) {
         val moveComparator: (Move, Move) -> Int =
-        // TODO: strange place, I need to understand why assertj uses comparators, it's so inconvenient!
             { x, y -> if (x.copy(date = Instant.EPOCH) == y.copy(date = Instant.EPOCH)) 0 else -1 }
 
         assertThat(actual)

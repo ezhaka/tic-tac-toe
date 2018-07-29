@@ -1,5 +1,7 @@
 package com.example.tictactoe.model
 
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
 const val BOARD_SIZE = 10
@@ -9,8 +11,9 @@ const val BOARD_SIZE = 10
  */
 const val K_PARAM = 4
 
+@Document(collection = "boards")
 data class Board(
-    val id: Int,
+    @Id val id: Int,
     val version: Int = 0,
     val moves: List<Move> = emptyList(),
     val players: Set<Player> = emptySet(),
@@ -22,7 +25,10 @@ data class Board(
     fun makeMove(move: Move): Board {
         require(winner == null)
         require(move.coordinates.row in 0..(BOARD_SIZE - 1) && move.coordinates.column in 0..(BOARD_SIZE - 1))
-        require(players.any { it.userId === move.userId })
+
+        require(players.any { it.userId == move.userId }) {
+            "Board $id has no player with user id ${move.userId}, players: $players"
+        }
 
         val canMakeMove = moves.isEmpty() || moves.last().userId != move.userId
         require(canMakeMove) { "Tried to make a move ($move) out of order" }
