@@ -9,7 +9,20 @@ export default {
   getActiveBoards: globalize(state =>
     sortBy(values(state.entities).filter(b => !b.winner), b => -b.id)
   ),
+  isPlayer(state, boardId) {
+    const currentUser = authSelectors.getCurrentUser(state);
+    const board = this.getBoardById(state, boardId);
+    if (!board) {
+      return false;
+    }
+
+    return Boolean(find(board.players, p => p.user.id === currentUser.id));
+  },
   isActivePlayer(state, boardId) {
+    if (!this.isPlayer(state, boardId)) {
+      return false;
+    }
+
     const currentUser = authSelectors.getCurrentUser(state);
     const board = this.getBoardById(state, boardId);
 

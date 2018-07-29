@@ -2,7 +2,8 @@ import { mapStateToProps } from "./Board";
 import configureStore from "../store/configureStore";
 import {
   boardCreated,
-  boardListLoaded, enterBoard,
+  boardListLoaded,
+  enterBoard,
   moveMade as moveMadeAction,
   playerWonMessage
 } from "../store/boards/actions";
