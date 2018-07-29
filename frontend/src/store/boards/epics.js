@@ -5,7 +5,7 @@ import { push } from "connected-react-router";
 import { matchPath } from "react-router-dom";
 import { of, concat, EMPTY } from "rxjs";
 import {
-  boardLoaded,
+  finishedBoardLoaded,
   CREATE_BOARD,
   enterBoard,
   joinBoard,
@@ -44,7 +44,7 @@ export default combineEpics(
       flatMap(({ params }) => loadBoard(states.value, params.id)),
       flatMap(({ board, isFromStore }) =>
         concat(
-          isFromStore ? EMPTY : of(boardLoaded(board)),
+          isFromStore ? EMPTY : of(finishedBoardLoaded(board)),
           of(enterBoard(board.id)),
           board.winner ? EMPTY : of(joinBoard(board.id))
         )

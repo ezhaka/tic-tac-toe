@@ -26,27 +26,20 @@ const boardId = 1;
 const moveMade = curry(moveMadeAction)(boardId);
 
 it(`${BOARD_LIST_LOADED} action`, () => {
-  const nextState = reducer(
-    undefined,
-    boardListLoaded([twoPlayerBoard(boardId)])
-  );
+  const state = reducer(undefined, boardListLoaded([twoPlayerBoard(boardId)]));
 
-  expect(selectors.getBoardById(globalize(nextState), boardId)).toEqual(
+  expect(selectors.getBoardById(globalize(state), boardId)).toEqual(
     twoPlayerBoard(boardId)
   );
 });
 
 it(`${PLAYER_JOINED} action`, () => {
-  let nextState = reducer(
-    undefined,
-    boardListLoaded([twoPlayerBoard(boardId)])
-  );
-  nextState = reducer(
-    nextState,
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
     playerJoined(boardId, player(3, iconTypes.CACTUS))
-  );
+  ].reduce(reducer, undefined);
 
-  let board = selectors.getBoardById(globalize(nextState), boardId);
+  let board = selectors.getBoardById(globalize(state), boardId);
   expect(board.players).toEqual([
     player(1, iconTypes.UNICORN),
     player(2, iconTypes.HEDGEHOG),
@@ -55,20 +48,18 @@ it(`${PLAYER_JOINED} action`, () => {
 });
 
 it(`${MOVE_MADE} action`, () => {
-  let nextState = reducer(
-    undefined,
-    boardListLoaded([twoPlayerBoard(boardId)])
-  );
-
   const action = {
     type: MOVE_MADE,
     boardId,
     move: { userId: 1, coordinates: coordinates(0, 0) }
   };
 
-  nextState = reducer(nextState, action);
+  const state = [boardListLoaded([twoPlayerBoard(boardId)]), action].reduce(
+    reducer,
+    undefined
+  );
 
-  let board = selectors.getBoardById(globalize(nextState), boardId);
+  const board = selectors.getBoardById(globalize(state), boardId);
   expect(board.moves).toEqual([action.move]);
 });
 
@@ -83,41 +74,35 @@ const playerWonAction = {
 };
 
 it("should remove finished board from store", () => {
-  let nextState = reducer(
-    undefined,
-    boardListLoaded([twoPlayerBoard(boardId)])
-  );
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
+    playerWonAction
+  ].reduce(reducer, undefined);
 
-  nextState = reducer(nextState, playerWonAction);
-
-  let board = selectors.getBoardById(globalize(nextState), boardId);
+  let board = selectors.getBoardById(globalize(state), boardId);
   expect(board).toBeFalsy();
 });
 
 it("should not remove finished board if it's current one", () => {
-  let nextState = reducer(
-    undefined,
-    boardListLoaded([twoPlayerBoard(boardId)])
-  );
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
+    enterBoard(boardId),
+    playerWonAction
+  ].reduce(reducer, undefined);
 
-  nextState = reducer(nextState, enterBoard(boardId));
-  nextState = reducer(nextState, playerWonAction);
-
-  let board = selectors.getBoardById(globalize(nextState), boardId);
+  let board = selectors.getBoardById(globalize(state), boardId);
   expect(board).toBeTruthy();
 });
 
 it("should remove finished board on exit", () => {
-  let nextState = reducer(
-    undefined,
-    boardListLoaded([twoPlayerBoard(boardId)])
-  );
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
+    enterBoard(boardId),
+    playerWonAction,
+    leaveBoard()
+  ].reduce(reducer, undefined);
 
-  nextState = reducer(nextState, enterBoard(boardId));
-  nextState = reducer(nextState, playerWonAction);
-  nextState = reducer(nextState, leaveBoard());
-
-  let board = selectors.getBoardById(globalize(nextState), boardId);
+  let board = selectors.getBoardById(globalize(state), boardId);
   expect(board).toBeFalsy();
 });
 
@@ -163,4 +148,39 @@ it("should apply pending messages when board list loaded", () => {
       userId: 1
     }
   });
+});
+
+it("should mark current board as dirty if it's missing from fresh board list", () => {
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
+    enterBoard(boardId),
+    boardListLoaded([])
+  ].reduce(reducer, undefined);
+
+  const board = selectors.getBoardById(globalize(state), boardId);
+  expect(board).toBeTruthy();
+  expect(board.dirty).toBeTruthy();
+});
+
+it("should not mark current board as dirty if it has winner and is missing from fresh board list", () => {
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
+    enterBoard(boardId),
+    playerWonAction,
+    boardListLoaded([])
+  ].reduce(reducer, undefined);
+
+  const board = selectors.getBoardById(globalize(state), boardId);
+  expect(board).toBeTruthy();
+  expect(board.dirty).toBeFalsy();
+});
+
+it("should remove any board except current one from store on initialization completion", () => {
+  const state = [
+    boardListLoaded([twoPlayerBoard(boardId)]),
+    boardListLoaded([])
+  ].reduce(reducer, undefined);
+
+  const board = selectors.getBoardById(globalize(state), boardId);
+  expect(board).toBeFalsy();
 });

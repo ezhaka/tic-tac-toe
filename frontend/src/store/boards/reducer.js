@@ -98,6 +98,14 @@ export default function(state = initialState, action) {
       const { pendingActions, currentBoardId } = state;
       const entities = keyBy(action.boards, board => board.id);
 
+      if (currentBoardId && !entities[currentBoardId]) {
+        const currentBoard = state.entities[currentBoardId];
+        entities[currentBoardId] = {
+          ...currentBoard,
+          dirty: !currentBoard.winner
+        };
+      }
+
       return {
         ...pendingActions.reduce(applyAction, { entities, currentBoardId }),
         isInitialized: true,

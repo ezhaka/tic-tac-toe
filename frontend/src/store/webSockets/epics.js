@@ -1,7 +1,14 @@
 import { combineEpics } from "redux-observable";
 import { concat, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { filter, map, flatMap, delay, catchError } from "rxjs/operators";
+import {
+  filter,
+  map,
+  flatMap,
+  delay,
+  catchError,
+  withLatestFrom
+} from "rxjs/operators";
 import {
   openWebSocketConnection,
   INITIALIZE,
@@ -10,8 +17,13 @@ import {
   WEB_SOCKET_CONNECTION_OPENED,
   INITIALIZATION_SUCCESSFUL
 } from "./actions";
-import { boardListLoaded } from "../boards/actions";
+import {
+  BOARD_LIST_LOADED,
+  boardListLoaded,
+  finishedBoardLoaded
+} from "../boards/actions";
 import { authenticated } from "../authentication/actions";
+import selectors from "../boards/selectors";
 
 function authenticate() {
   return ajax.post(`/api/auth`).pipe(
@@ -57,5 +69,26 @@ export default combineEpics(
       ),
       delay(1000),
       map(() => ({ type: INITIALIZE }))
+    ),
+  (actions, states) =>
+    actions.pipe(
+      filter(({ type }) => type === BOARD_LIST_LOADED),
+      withLatestFrom(
+        states.pipe(map(state => selectors.getCurrentBoardId(state)))
+      ),
+      filter(([, currentBoardId]) => {
+        const currentBoard = selectors.getBoardById(
+          states.value,
+          currentBoardId
+        );
+
+        return currentBoardId && currentBoard && currentBoard.dirty;
+      }),
+      flatMap(([, currentBoardId]) =>
+        ajax.get(`/api/boards/${currentBoardId}`)
+      ),
+      // TODO: error handling
+      map(r => r.response),
+      map(board => finishedBoardLoaded(board))
     )
 );

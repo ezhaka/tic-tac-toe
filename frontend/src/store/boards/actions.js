@@ -47,7 +47,10 @@ export const playerWonMessage = (boardId, move, winner, boardVersion) => ({
   winner
 });
 
-export const boardLoaded = board => ({ type: FINISHED_BOARD_LOADED, board });
+export const finishedBoardLoaded = board => ({
+  type: FINISHED_BOARD_LOADED,
+  board
+});
 
 export const boardListLoaded = boards => ({ type: BOARD_LIST_LOADED, boards });
 
