@@ -1,5 +1,5 @@
 import { ajax } from "rxjs/ajax";
-import { map, filter, flatMap, skip } from "rxjs/operators";
+import { map, filter, flatMap, skip, catchError } from "rxjs/operators";
 import { combineEpics } from "redux-observable";
 import { push } from "connected-react-router";
 import { matchPath } from "react-router-dom";
@@ -13,6 +13,8 @@ import {
 } from "./actions";
 import { observeLocations } from "../../utils/epicUtils";
 import selectors from "./selectors";
+import { changeBoardPageStatus } from "./boardPage/actions";
+import status from "./status";
 
 const matchLocation = path => location =>
   matchPath(location.pathname, { path });
@@ -47,6 +49,11 @@ export default combineEpics(
           isFromStore ? EMPTY : of(finishedBoardLoaded(board)),
           of(enterBoard(board.id)),
           board.winner ? EMPTY : of(joinBoard(board.id))
+        )
+      ),
+      catchError(error =>
+        of(
+          changeBoardPageStatus(error.status ? status.ERROR_404 : status.ERROR)
         )
       )
     ),

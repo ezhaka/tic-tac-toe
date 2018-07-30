@@ -103,7 +103,7 @@ export default function reducer(
 
     case LEAVE_BOARD: {
       const board = state[currentBoardId];
-      return board.winner ? omit(state, currentBoardId) : state;
+      return board && board.winner ? omit(state, currentBoardId) : state;
     }
 
     default:

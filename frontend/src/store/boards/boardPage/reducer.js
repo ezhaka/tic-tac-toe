@@ -1,3 +1,4 @@
+import { CHANGE_BOARD_PAGE_STATUS } from "./actions";
 import { ENTER_BOARD, LEAVE_BOARD } from "../actions";
 
 const initialState = {
@@ -11,7 +12,10 @@ export default function(state = initialState, action) {
       return { ...state, currentBoardId: action.boardId };
 
     case LEAVE_BOARD:
-      return { ...state, currentBoardId: undefined };
+      return initialState;
+
+    case CHANGE_BOARD_PAGE_STATUS:
+      return { ...state, status: action.status };
 
     default:
       return state;
