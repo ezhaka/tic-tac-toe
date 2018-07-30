@@ -6,12 +6,12 @@ import { createBrowserHistory } from "history";
 import App from "./components/App";
 import registerServiceWorker from "./registerServiceWorker";
 import configureStore from "./store/configureStore";
-import { INITIALIZE } from "./store/webSockets/actions";
 import "./index.scss";
+import { initialize } from "./store/initialzation/actions";
 
 const history = createBrowserHistory();
 const store = configureStore(history);
-store.dispatch({ type: INITIALIZE });
+store.dispatch(initialize());
 
 ReactDOM.render(
   <Provider store={store}>

@@ -11,12 +11,9 @@ import {
 } from "rxjs/operators";
 import {
   openWebSocketConnection,
-  INITIALIZE,
-  INITIALIZATION_FAILED,
   WEB_SOCKET_CONNECTION_CLOSED,
-  WEB_SOCKET_CONNECTION_OPENED,
-  INITIALIZATION_SUCCESSFUL
-} from "./actions";
+  WEB_SOCKET_CONNECTION_OPENED
+} from "../webSockets/actions";
 import {
   BOARD_LIST_LOADED,
   boardListLoaded,
@@ -24,6 +21,15 @@ import {
 } from "../boards/actions";
 import { authenticated } from "../authentication/actions";
 import selectors from "../boards/selectors";
+import status from "../boards/status";
+import { changeBoardPageStatus } from "../boards/boardPage/actions";
+import {
+  INITIALIZATION_FAILED,
+  initializationFailed,
+  initializationSuccessful,
+  initialize,
+  INITIALIZE
+} from "./actions";
 
 function authenticate() {
   return ajax.post(`/api/auth`).pipe(
@@ -48,18 +54,18 @@ export default combineEpics(
           catchError(error => {
             // eslint-disable-next-line no-console
             console.error("Initialization error", error);
-            return of({ type: INITIALIZATION_FAILED });
+            return of(initializationFailed());
           })
         )
       )
     ),
+
   actions =>
     actions.pipe(
       filter(({ type }) => type === WEB_SOCKET_CONNECTION_OPENED),
-      flatMap(() =>
-        concat(loadBoards(), of({ type: INITIALIZATION_SUCCESSFUL }))
-      )
+      flatMap(() => concat(loadBoards(), of(initializationSuccessful())))
     ),
+
   actions =>
     actions.pipe(
       filter(
@@ -68,8 +74,9 @@ export default combineEpics(
           type === INITIALIZATION_FAILED
       ),
       delay(1000),
-      map(() => ({ type: INITIALIZE }))
+      map(() => initialize())
     ),
+
   (actions, states) =>
     actions.pipe(
       filter(({ type }) => type === BOARD_LIST_LOADED),
@@ -85,10 +92,17 @@ export default combineEpics(
         return currentBoardId && currentBoard && currentBoard.dirty;
       }),
       flatMap(([, currentBoardId]) =>
-        ajax.get(`/api/boards/${currentBoardId}`)
-      ),
-      // TODO: error handling
-      map(r => r.response),
-      map(board => finishedBoardLoaded(board))
+        ajax.get(`/api/boards/${currentBoardId}`).pipe(
+          catchError(error =>
+            of(
+              changeBoardPageStatus(
+                error.status ? status.ERROR_404 : status.ERROR
+              )
+            )
+          ),
+          map(r => r.response),
+          map(board => finishedBoardLoaded(board))
+        )
+      )
     )
 );

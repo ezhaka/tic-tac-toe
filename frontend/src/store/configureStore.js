@@ -6,7 +6,7 @@ import boardsReducer from "./boards/reducer";
 import webSocketsReducer from "./webSockets/reducer";
 import authenticationReducer from "./authentication/reducer";
 import boardsEpic from "./boards/epics";
-import webSocketsEpic from "./webSockets/epics";
+import initializationEpic from "./initialzation/epics";
 
 export default function configureStore(history) {
   const rootReducer = combineReducers({
@@ -15,7 +15,7 @@ export default function configureStore(history) {
     webSockets: webSocketsReducer
   });
 
-  const rootEpic = combineEpics(boardsEpic, webSocketsEpic);
+  const rootEpic = combineEpics(boardsEpic, initializationEpic);
 
   const composeEnhancers =
     // eslint-disable-next-line no-underscore-dangle
