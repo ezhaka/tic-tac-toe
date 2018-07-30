@@ -15,7 +15,7 @@ import StatusString from "./StatusString";
 import Header from "./Header";
 import "./BoardPage.scss";
 import boardPageSelectors from "../store/boards/boardPage/selectors";
-import statuses from "../store/boards/status";
+import { statuses } from "../store/boards/boardPage/reducer";
 
 class BoardPage extends Component {
   renderContent() {

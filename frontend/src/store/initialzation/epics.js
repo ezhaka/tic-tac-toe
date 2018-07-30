@@ -21,7 +21,6 @@ import {
 } from "../boards/actions";
 import { authenticated } from "../authentication/actions";
 import selectors from "../boards/selectors";
-import status from "../boards/status";
 import { changeBoardPageStatus } from "../boards/boardPage/actions";
 import {
   INITIALIZATION_FAILED,
@@ -30,6 +29,7 @@ import {
   initialize,
   INITIALIZE
 } from "./actions";
+import { statuses } from "../boards/boardPage/reducer";
 
 function authenticate() {
   return ajax.post(`/api/auth`).pipe(
@@ -96,7 +96,7 @@ export default combineEpics(
           catchError(error =>
             of(
               changeBoardPageStatus(
-                error.status ? status.ERROR_404 : status.ERROR
+                error.status ? statuses.ERROR_404 : statuses.ERROR
               )
             )
           ),

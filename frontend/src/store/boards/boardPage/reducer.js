@@ -6,6 +6,11 @@ const initialState = {
   status: undefined
 };
 
+export const statuses = {
+  ERROR: "ERROR",
+  ERROR_404: "ERROR_404"
+};
+
 export default function(state = initialState, action) {
   switch (action.type) {
     case ENTER_BOARD:

@@ -14,8 +14,8 @@ import {
 import { observeLocations } from "../../utils/epicUtils";
 import selectors from "./selectors";
 import { changeBoardPageStatus } from "./boardPage/actions";
-import status from "./status";
 import { setUnableToCreateBoard } from "./errors/actions";
+import { statuses } from "./boardPage/reducer";
 
 const matchLocation = path => location =>
   matchPath(location.pathname, { path });
@@ -57,7 +57,9 @@ export default combineEpics(
       ),
       catchError(error =>
         of(
-          changeBoardPageStatus(error.status ? status.ERROR_404 : status.ERROR)
+          changeBoardPageStatus(
+            error.status ? statuses.ERROR_404 : statuses.ERROR
+          )
         )
       )
     ),
