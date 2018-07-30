@@ -64,7 +64,7 @@ class WinnerCalculator(private val movesMap: Map<Coordinates, Move>, private val
     private fun expand(sequence: Sequence<Move?>): Move {
         return sequence
             .takeWhile { move: Move? -> move != null && move.userId == lastMove.userId }
-            .last()!! // TODO: не круто
+            .last()!!
     }
 
     private fun ascendingRange(coordinate: Int): Sequence<Int> {

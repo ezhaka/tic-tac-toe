@@ -4,7 +4,6 @@ import com.example.tictactoe.controllers.PlayerDto
 import com.example.tictactoe.model.BoardService
 import com.example.tictactoe.model.Move
 import com.example.tictactoe.websockets.messages.Message
-import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
 import com.example.tictactoe.websockets.messages.incoming.JoinBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.MakeMoveMessage
@@ -21,7 +20,7 @@ import reactor.core.publisher.UnicastProcessor
 class MessageBus(val boardService: BoardService) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val incomingMessagesProcessor = UnicastProcessor.create<IncomingMessageWrapper<IncomingBoardMessage>>()
+    private val incomingMessagesProcessor = UnicastProcessor.create<IncomingMessageWrapper>()
     private val incomingMessagesSink = incomingMessagesProcessor.sink()
 
     private val outgoingMessagesProcessor = UnicastProcessor.create<Message>()
@@ -43,7 +42,7 @@ class MessageBus(val boardService: BoardService) {
         outgoingMessages.connect()
     }
 
-    fun onIncomingMessage(messageWrapper: IncomingMessageWrapper<IncomingBoardMessage>) {
+    fun onIncomingMessage(messageWrapper: IncomingMessageWrapper) {
         incomingMessagesSink.next(messageWrapper)
     }
 
@@ -51,7 +50,7 @@ class MessageBus(val boardService: BoardService) {
         outgoingMessagesSink.next(message)
     }
 
-    private fun processIncomingMessageSafely(message: IncomingMessageWrapper<IncomingBoardMessage>): Mono<Message> {
+    private fun processIncomingMessageSafely(message: IncomingMessageWrapper): Mono<Message> {
         return this.processIncomingMessage(message)
             .onErrorResume {
                 log.error("An exception occured while processing message", it)
@@ -59,7 +58,7 @@ class MessageBus(val boardService: BoardService) {
             }
     }
 
-    private fun processIncomingMessage(wrapper: IncomingMessageWrapper<IncomingBoardMessage>): Mono<Message> {
+    private fun processIncomingMessage(wrapper: IncomingMessageWrapper): Mono<Message> {
         val (message, user) = wrapper
         return when (message) {
             is MakeMoveMessage -> {

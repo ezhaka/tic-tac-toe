@@ -73,8 +73,9 @@ class IntegrationTests {
             val incoming = expectedMessages
                 .zipWith(session.receive().map(this::parseSocketMessage))
                 .doOnNext { (expected, actual) -> assertMessagesAreEqual(expected, actual) }
+                .then()
 
-            outgoing.mergeWith(incoming.then()).then()
+            Mono.zip(outgoing, incoming).then()
         }
             .block()
     }
@@ -91,8 +92,7 @@ class IntegrationTests {
                     Assert.assertEquals(BoardCreatedMessage(board), message)
                 }
                 .then()
-        }
-            .block()
+        }.block()
     }
 
     @Test
@@ -102,33 +102,31 @@ class IntegrationTests {
 
         val board = createBoard(firstClient)
 
-        firstClient.openWebSocketConnection { firstSession ->
-            secondClient.openWebSocketConnection { secondSession ->
-                val outgoingMessage = secondSession.send(
-                    JoinBoardMessage(board.id)
-                        .toMono()
-                        .map { messageToJson(it) }
-                        .map(secondSession::textMessage)
-                )
+        openTwoSessions(firstClient, secondClient) { firstSession, secondSession ->
+            val outgoingMessage = secondSession.send(
+                JoinBoardMessage(board.id)
+                    .toMono()
+                    .map { messageToJson(it) }
+                    .map(secondSession::textMessage)
+            )
 
-                val incomingMessage = firstSession.receive()
-                    .map(this::parseSocketMessage)
-                    .doOnNext {
-                        val expectedMessage =
-                            PlayerJoinedMessage(
-                                board.id,
-                                PlayerDto(secondClient.user, PlayerIconType.HEDGEHOG),
-                                boardVersion = 2
-                            )
+            val incomingMessage = firstSession.receive()
+                .map(this::parseSocketMessage)
+                .doOnNext {
+                    val expectedMessage =
+                        PlayerJoinedMessage(
+                            board.id,
+                            PlayerDto(secondClient.user, PlayerIconType.HEDGEHOG),
+                            boardVersion = 2
+                        )
 
-                        Assert.assertEquals(expectedMessage, it)
-                    }
-                    .take(1)
+                    Assert.assertEquals(expectedMessage, it)
+                }
+                .take(1)
+                .then()
 
-                outgoingMessage.concatWith(incomingMessage.then()).then()
-            }
-        }
-            .block()
+            Mono.zip(outgoingMessage, incomingMessage).then()
+        }.block()
     }
 
     @Test
@@ -138,65 +136,72 @@ class IntegrationTests {
 
         val board = createBoard(firstClient)
 
-        firstClient.openWebSocketConnection { firstSession ->
-            secondClient.openWebSocketConnection { secondSession ->
-                val movesList = listOf(
-                    Pair(secondSession, JoinBoardMessage(board.id)),
-                    Pair(firstSession, MakeMoveMessage(board.id, Coordinates(0, 0))),
-                    Pair(secondSession, MakeMoveMessage(board.id, Coordinates(0, 1))),
-                    Pair(firstSession, MakeMoveMessage(board.id, Coordinates(1, 0))),
-                    Pair(secondSession, MakeMoveMessage(board.id, Coordinates(1, 1))),
-                    Pair(firstSession, MakeMoveMessage(board.id, Coordinates(2, 0))),
-                    Pair(secondSession, MakeMoveMessage(board.id, Coordinates(2, 1))),
-                    Pair(firstSession, MakeMoveMessage(board.id, Coordinates(3, 0)))
-                )
+        openTwoSessions(firstClient, secondClient) { firstSession, secondSession ->
+            val movesList = listOf(
+                Pair(secondSession, JoinBoardMessage(board.id)),
+                Pair(firstSession, MakeMoveMessage(board.id, Coordinates(0, 0))),
+                Pair(secondSession, MakeMoveMessage(board.id, Coordinates(0, 1))),
+                Pair(firstSession, MakeMoveMessage(board.id, Coordinates(1, 0))),
+                Pair(secondSession, MakeMoveMessage(board.id, Coordinates(1, 1))),
+                Pair(firstSession, MakeMoveMessage(board.id, Coordinates(2, 0))),
+                Pair(secondSession, MakeMoveMessage(board.id, Coordinates(2, 1))),
+                Pair(firstSession, MakeMoveMessage(board.id, Coordinates(3, 0)))
+            )
 
-                val moves = Flux.fromIterable(movesList.drop(1))
-                    .zipWith(firstSession.receive())
-                    .map { (outgoingMessage, _) -> outgoingMessage }
-                    .startWith(movesList[0])
-                    .publish()
-                    .refCount(2)
-
-                val send: (WebSocketSession) -> Mono<Void> = { s ->
-                    s.send(
-                        moves
-                            .filter { (session, _) -> session == s }
-                            .map { (_, message) -> messageToJson(message) }
-                            .map(s::textMessage)
+            val expectedLastMessage = PlayerWonMessage(
+                board.id,
+                Move(firstClient.user.id, Coordinates(3, 0)),
+                Winner(
+                    firstClient.user.id,
+                    listOf(
+                        CoordinateRange(
+                            Coordinates(0, 0),
+                            Coordinates(3, 0)
+                        )
                     )
-                }
+                ),
+                boardVersion = 9
+            )
 
-                Flux.merge(
-                    send(firstSession),
-                    send(secondSession),
-                    secondSession.receive()
-                        .map(this::parseSocketMessage)
-                        .take(movesList.size.toLong())
-                        .last()
-                        .doOnNext {
-                            val expectedMessage = PlayerWonMessage(
-                                board.id,
-                                Move(firstClient.user.id, Coordinates(3, 0)),
-                                Winner(
-                                    firstClient.user.id,
-                                    listOf(
-                                        CoordinateRange(
-                                            Coordinates(0, 0),
-                                            Coordinates(3, 0)
-                                        )
-                                    )
-                                ),
-                                boardVersion = 9
-                            )
+            val moves = Flux.fromIterable(movesList.drop(1))
+                .zipWith(firstSession.receive())
+                .map { (outgoingMessage, _) -> outgoingMessage }
+                .startWith(movesList[0])
+                .publish()
+                .refCount(2)
 
-                            assertMessagesAreEqual(expectedMessage, it)
-                        }
-                        .then()
-                ).then()
+            val send: (WebSocketSession) -> Mono<Void> = { s ->
+                s.send(
+                    moves
+                        .filter { (session, _) -> session == s }
+                        .map { (_, message) -> messageToJson(message) }
+                        .map(s::textMessage)
+                )
+            }
+
+            Mono.zip(
+                send(firstSession),
+                send(secondSession),
+                secondSession.receive()
+                    .map(this::parseSocketMessage)
+                    .take(movesList.size.toLong())
+                    .last()
+                    .doOnNext { assertMessagesAreEqual(expectedLastMessage, it) }
+                    .then()
+            ).then()
+        }.block()
+    }
+
+    private fun openTwoSessions(
+        firstClient: AuthenticatedClient,
+        secondClient: AuthenticatedClient,
+        handler: (WebSocketSession, WebSocketSession) -> Mono<Void>
+    ): Mono<Void> {
+        return firstClient.openWebSocketConnection { firstSession ->
+            secondClient.openWebSocketConnection { secondSession ->
+                handler(firstSession, secondSession)
             }
         }
-            .block()
     }
 
     private fun parseSocketMessage(message: WebSocketMessage) = messageFromJson(message.payloadAsText)

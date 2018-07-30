@@ -54,7 +54,7 @@ class SecurityConfiguration(private val userService: UserService) {
             .formLogin().disable()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
             .and()
-            .csrf().disable() // TODO: а может не надо? (вырубил, потому что не работает ajax POST)
+            .csrf().disable()
             .addFilterAt(filter, SecurityWebFiltersOrder.AUTHENTICATION)
             .build()
     }
