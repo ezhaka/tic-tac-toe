@@ -15,6 +15,7 @@ import { observeLocations } from "../../utils/epicUtils";
 import selectors from "./selectors";
 import { changeBoardPageStatus } from "./boardPage/actions";
 import status from "./status";
+import { setUnableToCreateBoard } from "./errors/actions";
 
 const matchLocation = path => location =>
   matchPath(location.pathname, { path });
@@ -33,11 +34,14 @@ export default combineEpics(
     actions.pipe(
       filter(({ type }) => type === CREATE_BOARD),
       flatMap(() =>
-        ajax.post(`/api/boards`, {}, { "Content-Type": "application/json" })
-      ),
-      map(r => r.response),
-      // TODO: error handling!!
-      map(board => push(`/boards/${board.id}`))
+        ajax
+          .post(`/api/boards`, {}, { "Content-Type": "application/json" })
+          .pipe(
+            map(r => r.response),
+            map(board => push(`/boards/${board.id}`)),
+            catchError(() => of(setUnableToCreateBoard(true)))
+          )
+      )
     ),
   (actions, states) =>
     observeLocations(actions, states).pipe(
