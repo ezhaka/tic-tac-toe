@@ -2,7 +2,7 @@ import { get } from "lodash";
 import entitiesReducer from "./entities/reducer";
 import initializationReducer from "./initialization/reducer";
 import boardPageReducer from "./boardPage/reducer";
-import errorsReducer from "./errors/reducer";
+import boardCreationReducer from "./boardCreation/reducer";
 
 export default function(state = {}, action) {
   return {
@@ -14,6 +14,6 @@ export default function(state = {}, action) {
     ),
     initialization: initializationReducer(state.initialization, action),
     boardPage: boardPageReducer(state.boardPage, action),
-    errors: errorsReducer(state.errors, action)
+    boardCreation: boardCreationReducer(state.boardCreation, action)
   };
 }

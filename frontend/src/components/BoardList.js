@@ -13,6 +13,8 @@ import Title from "grommet/components/Title";
 import selectors from "../store/boards/selectors";
 import { createBoard } from "../store/boards/actions";
 import Header from "./Header";
+import { statuses } from "../store/boards/boardCreation/reducer";
+import boardCreationSelectors from "../store/boards/boardCreation/selectors";
 
 class BoardListItem extends Component {
   handleClick = () => {
@@ -48,12 +50,17 @@ class BoardList extends Component {
   };
 
   render() {
+    const { isCreationInProgress, boards } = this.props;
+
     return (
       <div>
         <Header>
           <Title>tic-tac-toe</Title>
         </Header>
-        <Button label="Create board" onClick={this.createBoard} />
+        <Button
+          label="Create board"
+          onClick={isCreationInProgress ? undefined : this.createBoard}
+        />
         <Section>
           <Table selectable>
             <thead>
@@ -64,7 +71,7 @@ class BoardList extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.boards.map((board, index) => (
+              {boards.map((board, index) => (
                 <BoardListItem
                   key={board.id}
                   board={board}
@@ -81,7 +88,9 @@ class BoardList extends Component {
 }
 
 const mapStateToProps = state => ({
-  boards: selectors.getActiveBoards(state)
+  boards: selectors.getActiveBoards(state),
+  isCreationInProgress:
+    boardCreationSelectors.getStatus(state) === statuses.IN_PROGRESS
 });
 
 const mapDispatchToProps = dispatch => ({

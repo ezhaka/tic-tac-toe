@@ -8,13 +8,14 @@ import Toast from "grommet/components/Toast";
 import { connect } from "react-redux";
 import BoardPage from "./BoardPage";
 import BoardList from "./BoardList";
-import selectors from "../store/boards/errors/selectors";
-import { setUnableToCreateBoard } from "../store/boards/errors/actions";
+import selectors from "../store/boards/boardCreation/selectors";
+import { resetBoardCreationError } from "../store/boards/boardCreation/actions";
 import "./App.scss";
+import { statuses } from "../store/boards/boardCreation/reducer";
 
 class App extends Component {
   render() {
-    const { isUnableToCreateBoard, dispatchUnableToCreateBoard } = this.props;
+    const { isUnableToCreateBoard } = this.props;
 
     return (
       <GrommetApp centered={false}>
@@ -22,7 +23,7 @@ class App extends Component {
           <Toast
             size="small"
             status="critical"
-            onClose={dispatchUnableToCreateBoard}
+            onClose={this.props.resetBoardCreationError}
           >
             Unable to create board, something went wrong.
           </Toast>
@@ -43,15 +44,11 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  isUnableToCreateBoard: selectors.isUnableToCreateBoard(state)
+  isUnableToCreateBoard: selectors.getStatus(state) === statuses.ERROR
 });
 
-const mapDispatchToProps = dispatch => ({
-  ...bindActionCreators(
-    { dispatchUnableToCreateBoard: setUnableToCreateBoard },
-    dispatch
-  )
-});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ resetBoardCreationError }, dispatch);
 
 export default withRouter(
   connect(

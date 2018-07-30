@@ -14,8 +14,12 @@ import {
 import { observeLocations } from "../../utils/epicUtils";
 import selectors from "./selectors";
 import { changeBoardPageStatus } from "./boardPage/actions";
-import { setUnableToCreateBoard } from "./errors/actions";
 import { statuses } from "./boardPage/reducer";
+import {
+  boardCreationFailed,
+  boardCreationInProgress,
+  boardCreationSuccessful
+} from "./boardCreation/actions";
 
 const matchLocation = path => location =>
   matchPath(location.pathname, { path });
@@ -34,13 +38,22 @@ export default combineEpics(
     actions.pipe(
       filter(({ type }) => type === CREATE_BOARD),
       flatMap(() =>
-        ajax
-          .post(`/api/boards`, {}, { "Content-Type": "application/json" })
-          .pipe(
-            map(r => r.response),
-            map(board => push(`/boards/${board.id}`)),
-            catchError(() => of(setUnableToCreateBoard(true)))
-          )
+        concat(
+          of(boardCreationInProgress()),
+          ajax
+            .post(`/api/boards`, {}, { "Content-Type": "application/json" })
+            .pipe(
+              map(r => r.response),
+              flatMap(board =>
+                of(push(`/boards/${board.id}`), boardCreationSuccessful())
+              ),
+              catchError(error => {
+                // eslint-disable-next-line no-console
+                console.error(error);
+                return of(boardCreationFailed());
+              })
+            )
+        )
       )
     ),
   (actions, states) =>
