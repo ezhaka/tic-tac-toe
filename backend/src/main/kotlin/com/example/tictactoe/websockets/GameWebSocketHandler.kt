@@ -5,7 +5,6 @@ import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
