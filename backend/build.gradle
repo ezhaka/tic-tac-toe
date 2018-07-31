@@ -14,6 +14,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath "gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:4.1.0"
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:0.8.3"
     }
 }
 
@@ -23,6 +24,7 @@ apply plugin: 'kotlin-spring'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
+apply plugin: 'docker-compose'
 
 apply from: file("$rootProject.projectDir/gradle/heroku/stage.gradle")
 
@@ -83,4 +85,7 @@ task copyWebStatic(type: Copy) {
     }
 }
 
+dockerCompose.isRequiredBy(bootRun)
+
+bootRun.dependsOn(copyWebStatic)
 bootJar.dependsOn(copyWebStatic)
