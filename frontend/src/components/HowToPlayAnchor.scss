@@ -1,0 +1,7 @@
+.how-to-play-anchor {
+  // Grommet does not give a way to set this value from the outside
+  &.grommetux-anchor--icon-label {
+    font-size: 1rem;
+    font-weight: normal;
+  }
+}

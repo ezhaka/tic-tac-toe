@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import Label from "grommet/components/Label";
 import selectors from "../store/boards/selectors";
 import Player from "./Player";
+import "./StatusString.scss";
 
 const StatusString = ({
   boardId,
@@ -15,7 +15,9 @@ const StatusString = ({
 
   if (wonPlayer) {
     status = isWinner ? (
-      <span>Congrats! You are the winner</span>
+      <span>
+        Congrats! <span className="you">You</span> are the winner
+      </span>
     ) : (
       <span>
         <Player player={wonPlayer} boardId={boardId} /> won
@@ -31,7 +33,7 @@ const StatusString = ({
     );
   }
 
-  return <Label align="center">{status}</Label>;
+  return <span className="status-string">{status}</span>;
 };
 
 const mapStateToProps = (state, { boardId }) => ({

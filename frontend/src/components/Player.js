@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import { connect } from "react-redux";
 import Emoji from "./Emoji/Emoji";
@@ -5,11 +6,15 @@ import authSelectors from "../store/authentication/selectors";
 import "./Player.scss";
 import boardSelectors from "../store/boards/selectors";
 
-function Player({ player, isCurrentUser, isLoser }) {
+function Player({ player, isCurrentUser, isLoser, listItem }) {
   return (
-    <span className="player">
-      <Emoji type={player.iconType} size="1em" inactive={isLoser} />{" "}
-      {player.user.name} {isCurrentUser && <span className="you">(you)</span>}
+    <span className={classNames("player", listItem && "list-item")}>
+      <span className="player-icon">
+        <Emoji type={player.iconType} size="24px" inactive={isLoser} />{" "}
+      </span>
+      <span>
+        {player.user.name} {isCurrentUser && <span className="you">(you)</span>}
+      </span>
     </span>
   );
 }

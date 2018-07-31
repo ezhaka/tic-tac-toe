@@ -1,19 +1,23 @@
 import React from "react";
 import { connect } from "react-redux";
 import { sortBy } from "lodash";
+import Box from "grommet/components/Box";
 import selectors from "../store/boards/selectors";
 import Player from "./Player";
 import authSelectors from "../store/authentication/selectors";
 
 function PlayersList({ boardId, players }) {
   return (
-    <div>
+    <Box pad={{ vertical: "small" }}>
       {players.map(player => (
-        <div key={player.user.id}>
-          <Player player={player} boardId={boardId} />
-        </div>
+        <Player
+          key={player.user.id}
+          player={player}
+          boardId={boardId}
+          listItem
+        />
       ))}
-    </div>
+    </Box>
   );
 }
 

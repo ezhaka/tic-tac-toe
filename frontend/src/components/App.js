@@ -7,7 +7,7 @@ import Box from "grommet/components/Box";
 import Toast from "grommet/components/Toast";
 import { connect } from "react-redux";
 import BoardPage from "./BoardPage";
-import BoardList from "./BoardList";
+import BoardListPage from "./BoardListPage";
 import selectors from "../store/boards/boardCreation/selectors";
 import { resetBoardCreationError } from "../store/boards/boardCreation/actions";
 import "./App.scss";
@@ -30,9 +30,9 @@ class App extends Component {
         )}
         <Box full>
           <Box align="center" flex="grow">
-            <Box pad={{ horizontal: "medium" }} size="xlarge" flex="grow">
+            <Box pad={{ horizontal: "medium" }} size="xxlarge" flex="grow">
               <Switch>
-                <Route exact path="/" component={BoardList} />
+                <Route exact path="/" component={BoardListPage} />
                 <Route exact path="/boards/:id" component={BoardPage} />
               </Switch>
             </Box>

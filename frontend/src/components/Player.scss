@@ -1,3 +1,31 @@
-.player .you {
-    color: #dc2878;
+@import "~grommet/scss/vanilla/index";
+
+.player {
+  .you {
+    color: nth($brand-neutral-colors, 2);
+  }
+
+  .player-icon {
+    margin-right: 12px;
+    width: 24px;
+    display: inline-block;
+  }
+
+  &.list-item {
+    padding-left: 36px;
+    position: relative;
+    line-height: 21px;
+    min-height: 24px;
+    display: block;
+
+    & + & {
+      margin-top: 6px;
+    }
+
+    .player-icon {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
 }

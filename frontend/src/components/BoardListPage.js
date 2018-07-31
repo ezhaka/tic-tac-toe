@@ -40,7 +40,7 @@ class BoardListItem extends Component {
   }
 }
 
-class BoardList extends Component {
+class BoardListPage extends Component {
   createBoard = () => {
     this.props.createBoard();
   };
@@ -100,4 +100,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(BoardList);
+)(BoardListPage);

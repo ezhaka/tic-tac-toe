@@ -1,0 +1,12 @@
+@import "~grommet/scss/vanilla/index";
+
+.status-string {
+  text-align: center;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-size: 1.1875rem;
+
+  .you {
+    color: nth($brand-neutral-colors, 2);
+  }
+}
