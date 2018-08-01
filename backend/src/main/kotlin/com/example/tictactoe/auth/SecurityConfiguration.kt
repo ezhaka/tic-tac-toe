@@ -63,10 +63,7 @@ class SecurityConfiguration(private val userService: UserService) {
         securityContextRepository: ServerSecurityContextRepository,
         authenticationEntryPoint: ServerAuthenticationEntryPoint
     ): AuthenticationWebFilter {
-        val filter = AuthenticationWebFilter {
-            it.isAuthenticated = true
-            Mono.just(it)
-        }
+        val filter = AuthenticationWebFilter { Mono.just(it) }
 
         filter.setSecurityContextRepository(securityContextRepository)
 
