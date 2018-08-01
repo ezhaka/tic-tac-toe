@@ -5,32 +5,20 @@ import org.springframework.security.core.GrantedAuthority
 import java.util.Collections
 
 class GameAuthentication(val user: User) : Authentication {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return Collections.emptyList()
-    }
+    private var isAuthenticated: Boolean = false
+
+    override fun getName() = user.name
+    override fun getCredentials() = user.token
 
     override fun setAuthenticated(isAuthenticated: Boolean) {
+        this.isAuthenticated = isAuthenticated
     }
 
-    override fun getName(): String {
-        return user.name
-    }
+    override fun isAuthenticated() = isAuthenticated
 
-    override fun getCredentials(): Any? {
-        return user.token
-    }
-
-    override fun getPrincipal(): Any? {
-        return null
-    }
-
-    override fun isAuthenticated(): Boolean {
-        return true
-    }
-
-    override fun getDetails(): Any? {
-        return null
-    }
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = Collections.emptyList()
+    override fun getDetails() = null
+    override fun getPrincipal() = null
 
     override fun toString(): String {
         return "GameAuthentication(user=$user)"

@@ -9,4 +9,8 @@ data class User(
     @Id val id: String,
     val name: String,
     @Indexed val token: String
-)
+) {
+    override fun toString(): String {
+        return "User(id='$id', name='$name', token='****')"
+    }
+}

@@ -26,6 +26,8 @@ class MessageBus(val boardService: BoardService) {
             .doOnNext { log.info("Received message $it") }
             .groupBy { it.message.boardId }
             .flatMap { boardMessages ->
+                // concatMap is crucial here, it provides sequential handling of messages for each board,
+                // thereby preventing race condition
                 boardMessages.concatMap(this::handleIncomingMessageSafely)
                     .takeUntil { it is PlayerWonMessage }
             }

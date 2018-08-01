@@ -76,8 +76,7 @@ class IntegrationTests {
                 .then()
 
             Mono.zip(outgoing, incoming).then()
-        }
-            .block()
+        }.block()
     }
 
     @Test
@@ -110,18 +109,15 @@ class IntegrationTests {
                     .map(secondSession::textMessage)
             )
 
+            val expectedMessage = PlayerJoinedMessage(
+                board.id,
+                PlayerDto(secondClient.user, PlayerIconType.HEDGEHOG),
+                boardVersion = 2
+            )
+
             val incomingMessage = firstSession.receive()
                 .map(this::parseSocketMessage)
-                .doOnNext {
-                    val expectedMessage =
-                        PlayerJoinedMessage(
-                            board.id,
-                            PlayerDto(secondClient.user, PlayerIconType.HEDGEHOG),
-                            boardVersion = 2
-                        )
-
-                    Assert.assertEquals(expectedMessage, it)
-                }
+                .doOnNext { Assert.assertEquals(expectedMessage, it) }
                 .take(1)
                 .then()
 
@@ -164,10 +160,14 @@ class IntegrationTests {
             )
 
             val moves = Flux.fromIterable(movesList.drop(1))
+                // we assume that for every sent message there will be exactly one received message
+                // that's why we can zip output stream with input one in order to get a next message dispatched
+                // only when previous has been processed
                 .zipWith(firstSession.receive())
                 .map { (outgoingMessage, _) -> outgoingMessage }
                 .startWith(movesList[0])
                 .publish()
+                // there will be exactly 2 subscribers: from firstSession and secondSession
                 .refCount(2)
 
             val send: (WebSocketSession) -> Mono<Void> = { s ->
@@ -218,6 +218,7 @@ class IntegrationTests {
         expected: Message,
         actual: Message
     ) {
+        // Compare all fields except dates
         val moveComparator: (Move, Move) -> Int =
             { x, y -> if (x.copy(date = Instant.EPOCH) == y.copy(date = Instant.EPOCH)) 0 else -1 }
 
