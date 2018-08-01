@@ -13,7 +13,7 @@ import { observeLocations } from "../../utils/epicUtils";
 import selectors from "./selectors";
 import { changeBoardPageStatus } from "./boardPage/actions";
 import { statuses } from "./boardPage/reducer";
-import boardCreationEpic from "./boardCreation/epics";
+import boardCreationEpic from "./boardCreation/epic";
 
 const matchLocation = path => location =>
   matchPath(location.pathname, { path });
@@ -33,12 +33,12 @@ const mapError = error =>
 export default combineEpics(
   boardCreationEpic,
 
-  (actions, states) =>
-    observeLocations(actions, states).pipe(
+  (action$, state$) =>
+    observeLocations(action$, state$).pipe(
       map(matchLocation("/boards/:id")),
       filter(match => match && match.isExact),
       flatMap(({ params }) =>
-        loadBoard(states.value, params.id).pipe(
+        loadBoard(state$.value, params.id).pipe(
           flatMap(({ board, isFromStore }) =>
             concat(
               isFromStore ? EMPTY : of(finishedBoardLoaded(board)),
@@ -51,8 +51,8 @@ export default combineEpics(
       )
     ),
 
-  (actions, states) =>
-    observeLocations(actions, states).pipe(
+  (action$, state$) =>
+    observeLocations(action$, state$).pipe(
       skip(1), // we do not want LEAVE_BOARD to be dispatched on initialization
       map(matchLocation("/")),
       filter(match => match && match.isExact),

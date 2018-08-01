@@ -6,8 +6,8 @@ import webSocketMiddleware from "./webSockets/middleware";
 import boardsReducer from "./boards/reducer";
 import webSocketsReducer from "./webSockets/reducer";
 import authenticationReducer from "./authentication/reducer";
-import boardsEpic from "./boards/epics";
-import initializationEpic from "./initialzation/epics";
+import boardsEpic from "./boards/epic";
+import initializationEpic from "./initialzation/epic";
 
 export const rootReducer = combineReducers({
   authentication: authenticationReducer,

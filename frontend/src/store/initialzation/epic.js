@@ -59,20 +59,20 @@ function loadBoards(get) {
  *    we were disconnected.
  * 4. We mark our board as dirty and request it's actual state.
  */
-function reloadDirtyBoardEpic(actions, states, { ajax }) {
+function reloadDirtyBoardEpic(action$, state$, { ajax }) {
   const catchBoardFetchingError = catchError(error =>
     of(
       changeBoardPageStatus(error.status ? statuses.ERROR_404 : statuses.ERROR)
     )
   );
 
-  return actions.pipe(
+  return action$.pipe(
     ofType(ACTIVE_BOARD_LIST_LOADED),
     withLatestFrom(
-      states.pipe(map(state => boardPageSelectors.getCurrentBoardId(state)))
+      state$.pipe(map(state => boardPageSelectors.getCurrentBoardId(state)))
     ),
     filter(([, currentBoardId]) => {
-      const currentBoard = selectors.getBoardById(states.value, currentBoardId);
+      const currentBoard = selectors.getBoardById(state$.value, currentBoardId);
       return currentBoardId && currentBoard && currentBoard.dirty;
     }),
     flatMap(([, currentBoardId]) =>
@@ -111,8 +111,8 @@ export const catchInitializationFailure = catchError(error => {
  *   version than a board.
  */
 export default combineEpics(
-  (actions, states, { ajax }) =>
-    actions.pipe(
+  (action$, state$, { ajax }) =>
+    action$.pipe(
       ofType(INITIALIZE),
       flatMap(() =>
         concat(authenticate(ajax.post), of(openWebSocketConnection())).pipe(
@@ -121,8 +121,8 @@ export default combineEpics(
       )
     ),
 
-  (actions, states, { ajax }) =>
-    actions.pipe(
+  (action$, state$, { ajax }) =>
+    action$.pipe(
       ofType(WEB_SOCKET_CONNECTION_OPENED),
       flatMap(() =>
         concat(loadBoards(ajax.get), of(initializationSuccessful())).pipe(
@@ -131,8 +131,8 @@ export default combineEpics(
       )
     ),
 
-  actions =>
-    actions.pipe(
+  action$ =>
+    action$.pipe(
       ofType(WEB_SOCKET_CONNECTION_CLOSED, INITIALIZATION_FAILED),
       delay(1000),
       map(() => initialize())

@@ -9,8 +9,8 @@ import {
   CREATE_BOARD
 } from "./actions";
 
-export default combineEpics((actions, states, { ajax }) =>
-  actions.pipe(
+export default combineEpics((action$, state$, { ajax }) =>
+  action$.pipe(
     ofType(CREATE_BOARD),
     flatMap(() =>
       concat(
