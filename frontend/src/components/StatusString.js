@@ -29,7 +29,7 @@ const StatusString = ({
     status = isActivePlayer ? (
       <span>Your turn!</span>
     ) : (
-      <span>Waiting for other players to make a move</span>
+      <span>Waiting for any other player&#39;s move</span>
     );
   }
 

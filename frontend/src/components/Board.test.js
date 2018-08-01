@@ -2,7 +2,7 @@ import { mapStateToProps } from "./Board";
 import configureStore from "../store/configureStore";
 import {
   boardCreated,
-  boardListLoaded,
+  activeBoardListLoaded,
   enterBoard,
   moveMade as moveMadeAction,
   playerWonMessage
@@ -17,7 +17,7 @@ const moveMade = partial(moveMadeAction, boardId);
 it("unfinished board", () => {
   // arrange
   const store = configureStore();
-  store.dispatch(boardListLoaded([]));
+  store.dispatch(activeBoardListLoaded([]));
   store.dispatch(boardCreated(twoPlayerBoard(boardId)));
   store.dispatch(moveMade(1, 0, 0));
   store.dispatch(moveMade(2, 0, 1));
@@ -41,7 +41,7 @@ it("unfinished board", () => {
 it("X winner", () => {
   // arrange
   const store = configureStore();
-  store.dispatch(boardListLoaded([]));
+  store.dispatch(activeBoardListLoaded([]));
   store.dispatch(boardCreated(twoPlayerBoard(boardId)));
   store.dispatch(enterBoard(boardId));
   store.dispatch(moveMade(1, 0, 0));
@@ -107,7 +107,7 @@ it("X winner", () => {
 it("+ winner", () => {
   // arrange
   const store = configureStore();
-  store.dispatch(boardListLoaded([]));
+  store.dispatch(activeBoardListLoaded([]));
   store.dispatch(boardCreated(twoPlayerBoard(boardId)));
   store.dispatch(enterBoard(boardId));
   store.dispatch(moveMade(1, 0, 3));

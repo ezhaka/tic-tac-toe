@@ -11,24 +11,18 @@ export const LOSER_CELL = "LOSER_CELL";
 
 class BoardCell extends Component {
   handleClick = () => {
-    const { clickable, onClick, coordinates } = this.props;
-
-    if (!clickable) {
-      return;
-    }
-
+    const { onClick, coordinates } = this.props;
     onClick(coordinates);
   };
 
   render() {
     const { coordinates, iconType, cellState, clickable } = this.props;
-
     const className = classNames("board-cell", { clickable });
 
     return (
       <td
         key={coordinates.column}
-        onClick={this.handleClick}
+        onClick={clickable ? this.handleClick : undefined}
         className={className}
       >
         <div className="board-cell-content">

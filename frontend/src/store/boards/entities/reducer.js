@@ -1,7 +1,7 @@
 import { omit, keyBy } from "lodash";
 import {
   BOARD_CREATED,
-  BOARD_LIST_LOADED,
+  ACTIVE_BOARD_LIST_LOADED,
   FINISHED_BOARD_LOADED,
   LEAVE_BOARD,
   MOVE_MADE,
@@ -84,7 +84,7 @@ export default function reducer(
 
       return applyBoardAction(currentBoardId)(state, action);
 
-    case BOARD_LIST_LOADED: {
+    case ACTIVE_BOARD_LIST_LOADED: {
       const nextState = keyBy(action.boards, board => board.id);
 
       if (currentBoardId && !nextState[currentBoardId]) {

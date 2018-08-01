@@ -11,7 +11,7 @@ import Table from "grommet/components/Table";
 import TableRow from "grommet/components/TableRow";
 import Title from "grommet/components/Title";
 import selectors from "../store/boards/selectors";
-import { createBoard } from "../store/boards/actions";
+import { createBoard } from "../store/boards/boardCreation/actions";
 import Header from "./Header";
 import { statuses } from "../store/boards/boardCreation/reducer";
 import boardCreationSelectors from "../store/boards/boardCreation/selectors";

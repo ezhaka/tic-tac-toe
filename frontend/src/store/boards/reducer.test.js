@@ -1,6 +1,6 @@
 import {
-  BOARD_LIST_LOADED,
-  boardListLoaded,
+  ACTIVE_BOARD_LIST_LOADED,
+  activeBoardListLoaded,
   enterBoard,
   leaveBoard,
   MOVE_MADE,
@@ -25,8 +25,11 @@ const globalize = state => ({ boards: state });
 const boardId = 1;
 const moveMade = curry(moveMadeAction)(boardId);
 
-it(`${BOARD_LIST_LOADED} action`, () => {
-  const state = reducer(undefined, boardListLoaded([twoPlayerBoard(boardId)]));
+it(`${ACTIVE_BOARD_LIST_LOADED} action`, () => {
+  const state = reducer(
+    undefined,
+    activeBoardListLoaded([twoPlayerBoard(boardId)])
+  );
 
   expect(selectors.getBoardById(globalize(state), boardId)).toEqual(
     twoPlayerBoard(boardId)
@@ -35,7 +38,7 @@ it(`${BOARD_LIST_LOADED} action`, () => {
 
 it(`${PLAYER_JOINED} action`, () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
     playerJoined(boardId, player(3, iconTypes.CACTUS))
   ].reduce(reducer, undefined);
 
@@ -54,10 +57,10 @@ it(`${MOVE_MADE} action`, () => {
     move: { userId: 1, coordinates: coordinates(0, 0) }
   };
 
-  const state = [boardListLoaded([twoPlayerBoard(boardId)]), action].reduce(
-    reducer,
-    undefined
-  );
+  const state = [
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
+    action
+  ].reduce(reducer, undefined);
 
   const board = selectors.getBoardById(globalize(state), boardId);
   expect(board.moves).toEqual([action.move]);
@@ -75,7 +78,7 @@ const playerWonAction = {
 
 it("should remove finished board from store", () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
     playerWonAction
   ].reduce(reducer, undefined);
 
@@ -85,7 +88,7 @@ it("should remove finished board from store", () => {
 
 it("should not remove finished board if it's current one", () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
     enterBoard(boardId),
     playerWonAction
   ].reduce(reducer, undefined);
@@ -96,7 +99,7 @@ it("should not remove finished board if it's current one", () => {
 
 it("should remove finished board on exit", () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
     enterBoard(boardId),
     playerWonAction,
     leaveBoard()
@@ -117,7 +120,7 @@ it("should apply pending messages when board list loaded", () => {
     playerJoined(boardId, player(3, iconTypes.TURTLE), ++version),
     { ...playerWonAction, version: ++version },
 
-    boardListLoaded([
+    activeBoardListLoaded([
       {
         id: boardId,
         version: 2,
@@ -152,9 +155,9 @@ it("should apply pending messages when board list loaded", () => {
 
 it("should mark current board as dirty if it's missing from fresh board list", () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
     enterBoard(boardId),
-    boardListLoaded([])
+    activeBoardListLoaded([])
   ].reduce(reducer, undefined);
 
   const board = selectors.getBoardById(globalize(state), boardId);
@@ -164,10 +167,10 @@ it("should mark current board as dirty if it's missing from fresh board list", (
 
 it("should not mark current board as dirty if it has winner and is missing from fresh board list", () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
     enterBoard(boardId),
     playerWonAction,
-    boardListLoaded([])
+    activeBoardListLoaded([])
   ].reduce(reducer, undefined);
 
   const board = selectors.getBoardById(globalize(state), boardId);
@@ -177,8 +180,8 @@ it("should not mark current board as dirty if it has winner and is missing from 
 
 it("should remove any board except current one from store on initialization completion", () => {
   const state = [
-    boardListLoaded([twoPlayerBoard(boardId)]),
-    boardListLoaded([])
+    activeBoardListLoaded([twoPlayerBoard(boardId)]),
+    activeBoardListLoaded([])
   ].reduce(reducer, undefined);
 
   const board = selectors.getBoardById(globalize(state), boardId);

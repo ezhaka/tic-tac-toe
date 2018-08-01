@@ -1,6 +1,6 @@
 import {
   BOARD_CREATED,
-  BOARD_LIST_LOADED,
+  ACTIVE_BOARD_LIST_LOADED,
   FINISHED_BOARD_LOADED,
   MOVE_MADE,
   PLAYER_JOINED,
@@ -29,7 +29,7 @@ export default function(state = initialState, action) {
       return state;
     }
 
-    case BOARD_LIST_LOADED:
+    case ACTIVE_BOARD_LIST_LOADED:
       return {
         isInitialized: true,
         pendingActions: []
