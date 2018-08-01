@@ -4,9 +4,10 @@ import com.example.tictactoe.auth.User
 import com.example.tictactoe.controllers.PlayerDto
 import com.example.tictactoe.model.BoardService
 import com.example.tictactoe.model.Move
-import com.example.tictactoe.websockets.messages.MessageVisitor
+import com.example.tictactoe.websockets.messages.incoming.IncomingMessageVisitor
 import com.example.tictactoe.websockets.messages.incoming.JoinBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.MakeMoveMessage
+import com.example.tictactoe.websockets.messages.incoming.PingMessage
 import com.example.tictactoe.websockets.messages.outgoing.MoveMadeMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerJoinedMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
@@ -16,7 +17,8 @@ import reactor.core.publisher.Mono
 class IncomingMessageHandler(
     private val user: User,
     private val boardService: BoardService
-) : MessageVisitor<Mono<VersionedMessage>> {
+) : IncomingMessageVisitor<Mono<VersionedMessage>> {
+    override fun visit(message: PingMessage): Mono<VersionedMessage> = Mono.empty()
 
     override fun visit(message: MakeMoveMessage): Mono<VersionedMessage> {
         val move = Move(user.id, message.coordinates)

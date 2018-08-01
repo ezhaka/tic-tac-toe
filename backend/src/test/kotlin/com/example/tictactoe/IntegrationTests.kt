@@ -11,12 +11,15 @@ import com.example.tictactoe.model.Winner
 import com.example.tictactoe.websockets.messages.Message
 import com.example.tictactoe.websockets.messages.incoming.JoinBoardMessage
 import com.example.tictactoe.websockets.messages.incoming.MakeMoveMessage
+import com.example.tictactoe.websockets.messages.incoming.PingMessage
 import com.example.tictactoe.websockets.messages.outgoing.BoardCreatedMessage
 import com.example.tictactoe.websockets.messages.outgoing.MoveMadeMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerJoinedMessage
 import com.example.tictactoe.websockets.messages.outgoing.PlayerWonMessage
+import com.example.tictactoe.websockets.messages.outgoing.PongMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
@@ -53,6 +56,26 @@ class IntegrationTests {
     @Rule
     @JvmField
     final val timeout = Timeout.seconds(30)
+
+    @Test
+    fun `ping pong`() {
+        val firstClient = AuthenticatedClient()
+
+        firstClient.openWebSocketConnection { session ->
+            Mono.zip(
+                session.send(
+                    PingMessage().toMono().map { messageToJson(it) }.map(session::textMessage)
+                ),
+                session.receive()
+                    .map(this::parseSocketMessage)
+                    .next()
+                    .doOnNext { message: Message ->
+                        Assert.assertThat(message, CoreMatchers.instanceOf(PongMessage::class.java))
+                    }
+                    .then()
+            ).then()
+        }.block()
+    }
 
     @Test
     fun `single user makes a move`() {

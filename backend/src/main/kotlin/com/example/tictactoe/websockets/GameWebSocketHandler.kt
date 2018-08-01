@@ -2,8 +2,8 @@ package com.example.tictactoe.websockets
 
 import com.example.tictactoe.auth.GameAuthentication
 import com.example.tictactoe.websockets.messages.Message
-import com.example.tictactoe.websockets.messages.incoming.IncomingBoardMessage
-import com.example.tictactoe.websockets.messages.incoming.IncomingMessageWrapper
+import com.example.tictactoe.websockets.messages.incoming.AuthenticatedMessage
+import com.example.tictactoe.websockets.messages.incoming.IncomingMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketHandler
@@ -24,9 +24,9 @@ class GameWebSocketHandler(
             .combineLatest(
                 session.receive().map { messageFromJson(it.payloadAsText) },
                 session.handshakeInfo.principal,
-                BiFunction { message: IncomingBoardMessage, principal: Principal ->
+                BiFunction { message: IncomingMessage, principal: Principal ->
                     when (principal) {
-                        is GameAuthentication -> IncomingMessageWrapper(message, principal.user)
+                        is GameAuthentication -> AuthenticatedMessage(message, principal.user)
                         else ->
                             throw AuthenticationException(
                                 "Authentication is not found or has invalid type: $principal"
@@ -46,5 +46,5 @@ class GameWebSocketHandler(
 
     private fun messageToJson(message: Message) = objectMapper.writeValueAsString(message)
 
-    private fun messageFromJson(s: String) = objectMapper.readValue(s, IncomingBoardMessage::class.java)
+    private fun messageFromJson(s: String) = objectMapper.readValue(s, IncomingMessage::class.java)
 }

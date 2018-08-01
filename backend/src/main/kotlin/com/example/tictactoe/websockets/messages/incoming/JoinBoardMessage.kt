@@ -1,7 +1,6 @@
 package com.example.tictactoe.websockets.messages.incoming
 
 import com.example.tictactoe.websockets.messages.MessageType
-import com.example.tictactoe.websockets.messages.MessageVisitor
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class JoinBoardMessage(
@@ -10,5 +9,5 @@ data class JoinBoardMessage(
     override val type: MessageType
         get() = MessageType.JOIN_BOARD
 
-    override fun <T> acceptVisitor(handler: MessageVisitor<T>) = handler.visit(this)
+    override fun <T> acceptVisitor(handler: IncomingMessageVisitor<T>) = handler.visit(this)
 }
