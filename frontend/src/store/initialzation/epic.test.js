@@ -1,5 +1,5 @@
 import { createTestScheduler } from "../../utils/testUtils";
-import epic from "./epics";
+import epic from "./epic";
 import {
   initializationFailed,
   initializationSuccessful,

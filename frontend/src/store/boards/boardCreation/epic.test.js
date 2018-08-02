@@ -5,7 +5,7 @@ import {
   boardCreationSuccessful,
   createBoard
 } from "./actions";
-import epic from "./epics";
+import epic from "./epic";
 import { createTestScheduler } from "../../../utils/testUtils";
 
 it("successful CREATE_BOARD request", () => {

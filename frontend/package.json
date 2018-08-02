@@ -63,6 +63,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
+    "prebuild": "npm run test",
     "prettify": "prettier --write 'src/**/*.js'"
   },
   "jest": {
