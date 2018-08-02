@@ -1,5 +1,5 @@
 import { mapStateToProps } from "./Board";
-import configureStore from "../store/configureStore";
+import { rootReducer } from "../store/configureStore";
 import {
   boardCreated,
   activeBoardListLoaded,
@@ -16,16 +16,17 @@ const moveMade = partial(moveMadeAction, boardId);
 
 it("unfinished board", () => {
   // arrange
-  const store = configureStore();
-  store.dispatch(activeBoardListLoaded([]));
-  store.dispatch(boardCreated(twoPlayerBoard(boardId)));
-  store.dispatch(moveMade(1, 0, 0));
-  store.dispatch(moveMade(2, 0, 1));
-  store.dispatch(moveMade(1, 1, 0));
-  store.dispatch(moveMade(2, 2, 2));
+  const state = [
+    activeBoardListLoaded([]),
+    boardCreated(twoPlayerBoard(boardId)),
+    moveMade(1, 0, 0),
+    moveMade(2, 0, 1),
+    moveMade(1, 1, 0),
+    moveMade(2, 2, 2)
+  ].reduce(rootReducer, undefined);
 
   // act
-  let props = mapStateToProps(store.getState(), { boardId });
+  let props = mapStateToProps(state, { boardId });
 
   // assert
   expect(props).toEqual({
@@ -40,36 +41,11 @@ it("unfinished board", () => {
 
 it("X winner", () => {
   // arrange
-  const store = configureStore();
-  store.dispatch(activeBoardListLoaded([]));
-  store.dispatch(boardCreated(twoPlayerBoard(boardId)));
-  store.dispatch(enterBoard(boardId));
-  store.dispatch(moveMade(1, 0, 0));
-  store.dispatch(moveMade(2, 7, 0));
-  store.dispatch(moveMade(1, 1, 1));
-  store.dispatch(moveMade(2, 7, 1));
-  store.dispatch(moveMade(1, 2, 2));
-  store.dispatch(moveMade(2, 7, 2));
-  store.dispatch(moveMade(1, 4, 2));
-  store.dispatch(moveMade(2, 8, 0));
-  store.dispatch(moveMade(1, 5, 1));
-  store.dispatch(moveMade(2, 8, 1));
-  store.dispatch(moveMade(1, 6, 0));
-  store.dispatch(moveMade(2, 8, 2));
-  store.dispatch(moveMade(1, 2, 4));
-  store.dispatch(moveMade(2, 9, 0));
-  store.dispatch(moveMade(1, 1, 5));
-  store.dispatch(moveMade(2, 9, 1));
-  store.dispatch(moveMade(1, 0, 6));
-  store.dispatch(moveMade(2, 9, 2));
-  store.dispatch(moveMade(1, 4, 4));
-  store.dispatch(moveMade(2, 7, 4));
-  store.dispatch(moveMade(1, 5, 5));
-  store.dispatch(moveMade(2, 8, 4));
-  store.dispatch(moveMade(1, 6, 6));
-  store.dispatch(moveMade(2, 9, 4));
-
-  store.dispatch(
+  const state = [
+    activeBoardListLoaded([]),
+    boardCreated(twoPlayerBoard(boardId)),
+    enterBoard(boardId),
+    // ...several MOVE_MADE actions
     playerWonMessage(
       boardId,
       {
@@ -87,10 +63,10 @@ it("X winner", () => {
         ]
       }
     )
-  );
+  ].reduce(rootReducer, undefined);
 
   // act
-  let props = mapStateToProps(store.getState(), { boardId });
+  let props = mapStateToProps(state, { boardId });
 
   // assert
   expect(props.winnerCells).toEqual({
@@ -106,36 +82,11 @@ it("X winner", () => {
 
 it("+ winner", () => {
   // arrange
-  const store = configureStore();
-  store.dispatch(activeBoardListLoaded([]));
-  store.dispatch(boardCreated(twoPlayerBoard(boardId)));
-  store.dispatch(enterBoard(boardId));
-  store.dispatch(moveMade(1, 0, 3));
-  store.dispatch(moveMade(2, 7, 0));
-  store.dispatch(moveMade(1, 1, 3));
-  store.dispatch(moveMade(2, 7, 1));
-  store.dispatch(moveMade(1, 2, 3));
-  store.dispatch(moveMade(2, 7, 2));
-  store.dispatch(moveMade(1, 4, 3));
-  store.dispatch(moveMade(2, 8, 0));
-  store.dispatch(moveMade(1, 5, 3));
-  store.dispatch(moveMade(2, 8, 1));
-  store.dispatch(moveMade(1, 6, 3));
-  store.dispatch(moveMade(2, 8, 2));
-  store.dispatch(moveMade(1, 3, 0));
-  store.dispatch(moveMade(2, 9, 0));
-  store.dispatch(moveMade(1, 3, 1));
-  store.dispatch(moveMade(2, 9, 1));
-  store.dispatch(moveMade(1, 3, 2));
-  store.dispatch(moveMade(2, 9, 2));
-  store.dispatch(moveMade(1, 3, 4));
-  store.dispatch(moveMade(2, 7, 4));
-  store.dispatch(moveMade(1, 3, 5));
-  store.dispatch(moveMade(2, 8, 4));
-  store.dispatch(moveMade(1, 3, 6));
-  store.dispatch(moveMade(2, 9, 4));
-
-  store.dispatch(
+  const state = [
+    activeBoardListLoaded([]),
+    boardCreated(twoPlayerBoard(boardId)),
+    enterBoard(boardId),
+    // ...several MOVE_MADE actions
     playerWonMessage(
       boardId,
       {
@@ -153,10 +104,10 @@ it("+ winner", () => {
         ]
       }
     )
-  );
+  ].reduce(rootReducer, undefined);
 
   // act
-  let props = mapStateToProps(store.getState(), { boardId });
+  let props = mapStateToProps(state, { boardId });
 
   // assert
   expect(props.winnerCells).toEqual({
