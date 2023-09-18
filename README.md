@@ -9,6 +9,13 @@ Multiplayer tic-tac-toe game written in Kotlin and JS.
 * JDK 8
 * Docker
 
+```agsl
+Live
+Can you see mee?
+
+You know
+Whatsup dog?
+```
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 In order to run the project you can execute this command in the checkout directory:
 
