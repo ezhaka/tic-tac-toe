@@ -2,16 +2,20 @@
 
 Multiplayer tic-tac-toe game written in Kotlin and JS.
 
+Hey, ho! Let's go! [Play it now!](https://ezhaka.github.io/tic-tac-toe/)
+
 ## Getting Started
 
 ### Prerequisites
 
 * JDK 8
 * Docker
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-In order to run the project you can execute this command in the checkout directory:
-
+asdfasdf
+* asdfasdf
+* asd
+* fasdfasdfasdf
+* asdfasdfasdfasdf
+asdfasdfasdfasdfasdfasdf
 ```
 $ ./gradlew bootRun
 ```
@@ -59,6 +63,7 @@ It will automatically open ``http://localhost:3000``.
 ## Authors
 
 * **Anton Sukhonosenko** — [ezhaka](https://github.com/ezhaka)
+* **Arina Baranova** — [murpurfur](https://github.com/murpurfur)
 
 ## License
 
