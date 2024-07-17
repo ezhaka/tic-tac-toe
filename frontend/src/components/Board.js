@@ -20,7 +20,7 @@ class Board extends Component {
         return ACTIVE_CELL;
       }
 
-      return get(winnerCells, [row, column]) ? WINNER_CELL : LOSER_CELL;
+      return get(winnerCells, [row, column]) ? WINNER_CELL : WINNER_CELL;
     }
 
     return (
